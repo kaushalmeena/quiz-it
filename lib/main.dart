@@ -6,9 +6,7 @@ import 'package:quiz_it/screens/splash.dart';
 Store<Quiz> store;
 
 void main() {
-  store = Store<Quiz>(
-    initialState: Quiz.initial(),
-  );
+  store = Store<Quiz>(initialState: Quiz.initial());
   runApp(QuizIt());
 }
 

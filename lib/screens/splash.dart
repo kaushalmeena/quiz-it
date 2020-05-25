@@ -5,7 +5,9 @@ import 'package:quiz_it/screens/home.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _SplashScreenState createState() {
+    return _SplashScreenState();
+  }
 }
 
 class _SplashScreenState extends State<SplashScreen> {
@@ -18,7 +20,9 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePageConnector(),
+            builder: (context) {
+              return HomePageConnector();
+            },
           ),
         );
       },
