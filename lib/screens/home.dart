@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:async_redux/async_redux.dart';
+import 'package:flutter/material.dart';
 import 'package:quiz_it/actions/action.dart';
 import 'package:quiz_it/models/quiz.dart';
-import 'package:quiz_it/widgets/list.dart';
 import 'package:quiz_it/widgets/filter.dart';
+import 'package:quiz_it/widgets/list.dart';
 
 class HomePageConnector extends StatelessWidget {
   HomePageConnector({

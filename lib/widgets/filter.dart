@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_it/models/quiz.dart';
+import 'package:quiz_it/constants/amounts.dart';
 import 'package:quiz_it/constants/categories.dart';
 import 'package:quiz_it/constants/difficulties.dart';
-import 'package:quiz_it/constants/amounts.dart';
+import 'package:quiz_it/models/quiz.dart';
 
 class QuestionFilter extends StatelessWidget {
   final Quiz quiz;
