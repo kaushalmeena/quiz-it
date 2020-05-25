@@ -11,9 +11,9 @@ class QuestionCard extends StatelessWidget {
   QuestionCard({
     Key key,
     @required this.question,
-    @required this.markAnswer,
     @required this.index,
     @required this.total,
+    @required this.markAnswer,
   }) : super(key: key);
 
   getValueAccoringQuestionState(
