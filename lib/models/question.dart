@@ -34,8 +34,9 @@ class Question {
     String correctAnswer = unescape.convert(json['correct_answer']);
     List<String> incorrectAnswers = json['incorrect_answers'].cast<String>();
 
-    incorrectAnswers =
-        incorrectAnswers.map((item) => unescape.convert(item)).toList();
+    for (int i = 0; i < incorrectAnswers.length; i++) {
+      incorrectAnswers[i] = unescape.convert(incorrectAnswers[i]);
+    }
 
     List<String> allAnswers = List.from(incorrectAnswers);
     allAnswers.add(correctAnswer);
