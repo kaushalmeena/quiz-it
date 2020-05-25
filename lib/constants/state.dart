@@ -1,0 +1,5 @@
+enum QuestionState {
+  UNANSWERED,
+  RIGHT_ANSWERED,
+  WRONG_ANSWERED,
+}
