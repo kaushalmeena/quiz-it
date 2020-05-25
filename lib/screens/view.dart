@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:async_redux/async_redux.dart';
+import 'package:flutter/material.dart';
 import 'package:quiz_it/actions/action.dart';
 import 'package:quiz_it/models/quiz.dart';
 import 'package:quiz_it/widgets/card.dart';

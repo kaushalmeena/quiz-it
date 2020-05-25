@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quiz_it/screens/home.dart';
 
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: Image.asset(
-          'image/splash.png',
+          'assets/image/splash.png',
           height: 138,
           width: 252,
         ),
