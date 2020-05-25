@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape_small.dart';
 import 'package:quiz_it/constants/state.dart';
 import 'package:quiz_it/models/question.dart';
-
-HtmlUnescape unescape = new HtmlUnescape();
 
 class QuestionCard extends StatelessWidget {
   final Question question;
@@ -97,7 +94,7 @@ class QuestionCard extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    unescape.convert(question.question),
+                    question.question,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headline5,
                   ),

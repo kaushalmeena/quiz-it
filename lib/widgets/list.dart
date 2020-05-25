@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape_small.dart';
 import 'package:quiz_it/constants/state.dart';
 import 'package:quiz_it/models/quiz.dart';
 import 'package:quiz_it/screens/view.dart';
-
-HtmlUnescape unescape = new HtmlUnescape();
 
 class QuestionList extends StatelessWidget {
   final Quiz quiz;
@@ -38,7 +35,9 @@ class QuestionList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ViewPageConnector(initialPage: index),
+                builder: (context) {
+                  return ViewPageConnector(initialPage: index);
+                },
               ),
             );
           },
@@ -50,7 +49,10 @@ class QuestionList extends StatelessWidget {
               Colors.red[100],
             ),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 6,
+              ),
               child: Row(
                 children: [
                   Container(
@@ -73,7 +75,7 @@ class QuestionList extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              unescape.convert(quiz.questions[index].question),
+                              quiz.questions[index].question,
                               style: Theme.of(context).textTheme.bodyText2,
                             ),
                           ),

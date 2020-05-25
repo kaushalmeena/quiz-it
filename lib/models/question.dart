@@ -1,4 +1,7 @@
+import 'package:html_unescape/html_unescape_small.dart';
 import 'package:quiz_it/constants/state.dart';
+
+HtmlUnescape unescape = new HtmlUnescape();
 
 class Question {
   String category;
@@ -27,9 +30,12 @@ class Question {
     String category = json['category'];
     String type = json['type'];
     String difficulty = json['difficulty'].toString().toUpperCase();
-    String question = json['question'];
-    String correctAnswer = json['correct_answer'];
+    String question = unescape.convert(json['question']);
+    String correctAnswer = unescape.convert(json['correct_answer']);
     List<String> incorrectAnswers = json['incorrect_answers'].cast<String>();
+
+    incorrectAnswers =
+        incorrectAnswers.map((item) => unescape.convert(item)).toList();
 
     List<String> allAnswers = List.from(incorrectAnswers);
     allAnswers.add(correctAnswer);
