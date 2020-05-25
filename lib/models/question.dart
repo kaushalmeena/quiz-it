@@ -32,11 +32,11 @@ class Question {
     String difficulty = json['difficulty'].toString().toUpperCase();
     String question = unescape.convert(json['question']);
     String correctAnswer = unescape.convert(json['correct_answer']);
-    List<String> incorrectAnswers = json['incorrect_answers'].cast<String>();
 
-    for (int i = 0; i < incorrectAnswers.length; i++) {
-      incorrectAnswers[i] = unescape.convert(incorrectAnswers[i]);
-    }
+    List<String> incorrectAnswers = List<String>();
+    json['incorrect_answers'].forEach((item) {
+      incorrectAnswers.add(unescape.convert(item));
+    });
 
     List<String> allAnswers = List.from(incorrectAnswers);
     allAnswers.add(correctAnswer);

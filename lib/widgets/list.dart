@@ -6,7 +6,10 @@ import 'package:quiz_it/screens/view.dart';
 class QuestionList extends StatelessWidget {
   final Quiz quiz;
 
-  QuestionList({Key key, @required this.quiz}) : super(key: key);
+  QuestionList({
+    Key key,
+    @required this.quiz,
+  }) : super(key: key);
 
   getValueAccoringQuestionState(
     int index,

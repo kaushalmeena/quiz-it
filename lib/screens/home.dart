@@ -6,9 +6,7 @@ import 'package:quiz_it/widgets/filter.dart';
 import 'package:quiz_it/widgets/list.dart';
 
 class HomePageConnector extends StatelessWidget {
-  HomePageConnector({
-    Key key,
-  }) : super(key: key);
+  HomePageConnector({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
