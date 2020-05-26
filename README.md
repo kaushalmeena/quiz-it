@@ -1,6 +1,6 @@
 # Quiz-It
 
-A simple quiz flutter app which uses Redux for quiz state management.
+A simple flutter quiz app which uses Redux for quiz state management.
 
 ## Requirements
 
