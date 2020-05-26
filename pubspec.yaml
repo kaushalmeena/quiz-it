@@ -1,5 +1,5 @@
 name: quiz_it
-description: A simple quiz application
+description: A simple quiz flutter app which uses Redux for quiz state management.
 
 publish_to: "none"
 
