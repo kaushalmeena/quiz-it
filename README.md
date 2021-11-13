@@ -2,7 +2,7 @@
 
 A simple flutter quiz app which uses Redux for quiz state management.
 
-## Getting Started
+## Local Development
 
 These instructions will get you a copy of the project up and running on your local machine for development purposes.
 
@@ -47,4 +47,4 @@ Flutter has early support for building web applications using the beta channel o
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
