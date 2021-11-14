@@ -33,7 +33,7 @@ class Question {
     String question = unescape.convert(json['question']);
     String correctAnswer = unescape.convert(json['correct_answer']);
 
-    List<String> incorrectAnswers = List<String>();
+    List<String> incorrectAnswers = [];
     json['incorrect_answers'].forEach((item) {
       incorrectAnswers.add(unescape.convert(item));
     });

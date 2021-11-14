@@ -42,7 +42,7 @@ class QuestionCard extends StatelessWidget {
         question.allAnswers[index] == question.markedAnswer) {
       return Colors.red[200];
     }
-    return null;
+    return Colors.grey[200];
   }
 
   @override
@@ -92,7 +92,7 @@ class QuestionCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
+                  margin: EdgeInsets.symmetric(vertical: 30),
                   child: Text(
                     question.question,
                     textAlign: TextAlign.center,
@@ -101,30 +101,30 @@ class QuestionCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
                     itemCount: question.allAnswers.length,
                     itemBuilder: (context, index) {
                       return Container(
                         margin: EdgeInsets.symmetric(vertical: 5),
-                        child: ButtonTheme(
-                          height: 50,
+                        child: MaterialButton(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 24),
+                          color: Theme.of(context).primaryColor,
                           disabledColor: getDisabledColor(index),
-                          child: RaisedButton(
-                            onPressed: question.state ==
-                                    QuestionState.UNANSWERED
-                                ? () {
-                                    markAnswer(
-                                        question.allAnswers[index], this.index);
-                                  }
-                                : null,
-                            child: Text(
-                              question.allAnswers[index],
-                              style: TextStyle(
-                                fontSize: 18,
-                                color:
-                                    question.state == QuestionState.UNANSWERED
-                                        ? Colors.white
-                                        : null,
-                              ),
+                          onPressed: question.state == QuestionState.UNANSWERED
+                              ? () {
+                                  markAnswer(
+                                      question.allAnswers[index], this.index);
+                                }
+                              : null,
+                          child: Text(
+                            question.allAnswers[index],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: question.state == QuestionState.UNANSWERED
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),

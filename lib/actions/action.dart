@@ -22,15 +22,16 @@ class ShowLoader extends ReduxAction<Quiz> {
 class FetchQuestions extends ReduxAction<Quiz> {
   @override
   Future<Quiz> reduce() async {
-    dynamic response = await http.get(
+    var url = Uri.parse(
         'https://opentdb.com/api.php?amount=${state.amount}&category=${state.category}&difficulty=${state.difficulty}');
+    dynamic response = await http.get(url);
     dynamic data = json.decode(response.body);
 
     if (data['response_code'] != 0) {
       throw const UserException("Error occured while fetching questions.");
     }
 
-    List<Question> questions = List<Question>();
+    List<Question> questions = [];
 
     data['results'].forEach((item) {
       questions.add(Question.fromJson(item));
