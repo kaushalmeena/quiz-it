@@ -43,7 +43,12 @@ You can use the commands `flutter build` and `flutter run` from the root directo
 
 #### Web
 
-Flutter has early support for building web applications using the beta channel of Flutter. To add support for web development, follow [these instructions](https://flutter.dev/docs/get-started/web "these instructions").
+Flutter has support for building web applications in the stable channel.
+To add support for web development, follow [these instructions](https://flutter.dev/docs/get-started/web "these instructions").
+
+## Screenshots
+
+<img src="./screenshots/HomeScreen.png" width="250"> <img src="./screenshots/FilterBottomSheet.png" width="250" /> <img src="./screenshots/QuestionCard.png" width="250"/>
 
 ## License
 
