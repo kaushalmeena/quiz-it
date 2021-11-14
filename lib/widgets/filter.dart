@@ -75,44 +75,42 @@ class QuestionFilter extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
+            margin: EdgeInsets.only(top: 30),
             child: Column(
               children: [
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 5),
-                  child: ButtonTheme(
-                    height: 50,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                     minWidth: double.infinity,
-                    child: RaisedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 5),
-                  child: ButtonTheme(
-                    height: 50,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                     minWidth: double.infinity,
-                    child: RaisedButton(
-                      onPressed: () {
-                        fetchQuestions();
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Filter",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      fetchQuestions();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Refresh",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),

@@ -22,7 +22,6 @@ class HomePageConnector extends StatelessWidget {
           setDifficulty: vm.setDifficulty,
           setAmount: vm.setAmount,
           fetchQuestions: vm.fetchQuestions,
-          fetchQuestionsFuture: vm.fetchQuestionsFuture,
         );
       },
     );
@@ -35,7 +34,6 @@ class HomePageViewModel extends BaseModel<Quiz> {
   void Function(String) setDifficulty;
   void Function(String) setAmount;
   void Function() fetchQuestions;
-  Future<void> Function() fetchQuestionsFuture;
 
   HomePageViewModel();
 
@@ -45,7 +43,6 @@ class HomePageViewModel extends BaseModel<Quiz> {
     @required this.setDifficulty,
     @required this.setAmount,
     @required this.fetchQuestions,
-    @required this.fetchQuestionsFuture,
   }) : super(equals: [quiz]);
 
   @override
@@ -64,9 +61,6 @@ class HomePageViewModel extends BaseModel<Quiz> {
       fetchQuestions: () {
         dispatch(FetchQuestions());
       },
-      fetchQuestionsFuture: () {
-        return dispatchFuture(FetchQuestions());
-      },
     );
   }
 }
@@ -77,7 +71,6 @@ class HomePage extends StatelessWidget {
   final void Function(String) setDifficulty;
   final void Function(String) setAmount;
   final void Function() fetchQuestions;
-  final Future<void> Function() fetchQuestionsFuture;
 
   HomePage({
     Key key,
@@ -86,7 +79,6 @@ class HomePage extends StatelessWidget {
     @required this.setDifficulty,
     @required this.setAmount,
     @required this.fetchQuestions,
-    @required this.fetchQuestionsFuture,
   }) : super(key: key);
 
   @override
@@ -96,12 +88,9 @@ class HomePage extends StatelessWidget {
         centerTitle: false,
         title: Text("QuizIt"),
       ),
-      body: RefreshIndicator(
-        onRefresh: fetchQuestionsFuture,
-        child: quiz.loading
-            ? Center(child: CircularProgressIndicator())
-            : QuestionList(quiz: quiz),
-      ),
+      body: quiz.loading
+          ? Center(child: CircularProgressIndicator())
+          : QuestionList(quiz: quiz),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
