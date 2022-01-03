@@ -2,7 +2,7 @@
 
 A simple flutter quiz app which uses Redux for quiz state management.
 
-## Local Development
+## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development purposes.
 
