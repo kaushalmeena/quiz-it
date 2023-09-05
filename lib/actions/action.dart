@@ -28,7 +28,7 @@ class FetchQuestions extends ReduxAction<Quiz> {
     dynamic data = json.decode(response.body);
 
     if (data['response_code'] != 0) {
-      throw const UserException("Error occured while fetching questions.");
+      throw const UserException("Error occurred while fetching questions.");
     }
 
     List<Question> questions = [];

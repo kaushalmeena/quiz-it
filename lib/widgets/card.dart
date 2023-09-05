@@ -16,7 +16,7 @@ class QuestionCard extends StatelessWidget {
     @required this.markAnswer,
   }) : super(key: key);
 
-  getValueAccoringQuestionState(
+  getValueAccordingQuestionState(
     value1,
     value2,
     value3,
