@@ -11,7 +11,7 @@ class QuestionList extends StatelessWidget {
     @required this.quiz,
   }) : super(key: key);
 
-  getValueAccoringQuestionState(
+  getValueAccordingQuestionState(
     int index,
     value1,
     value2,
@@ -45,7 +45,7 @@ class QuestionList extends StatelessWidget {
             );
           },
           child: Card(
-            color: getValueAccoringQuestionState(
+            color: getValueAccordingQuestionState(
               index,
               Colors.white,
               Colors.green[100],
@@ -61,7 +61,7 @@ class QuestionList extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.only(right: 10),
                     child: Icon(
-                      getValueAccoringQuestionState(
+                      getValueAccordingQuestionState(
                         index,
                         Icons.help_outline,
                         Icons.check_circle_outline,
