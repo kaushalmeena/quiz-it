@@ -22,13 +22,13 @@ To set up everything in your local machine, you need to follow these steps:
 1. Clone this repo onto your computer:
 
 ```bash
-$ git clone https://github.com/kaushalmeena/quiz-it.git
+git clone https://github.com/kaushalmeena/quiz-it.git
 ```
 
 2. Install dependencies for the app:
 
 ```bash
-$ flutter pub get
+flutter pub get
 ```
 
 ### Running and Building
