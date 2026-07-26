@@ -4,14 +4,14 @@
 
 # Quiz-It
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.7-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-2.7+-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Async Redux](https://img.shields.io/badge/Async_Redux-13.1.0-764ABC?logo=redux&logoColor=white)](https://pub.dev/packages/async_redux)
+
 **A Flutter quiz app powered by Redux for state management.**
 
 A cross-platform quiz application built with [Flutter](https://flutter.dev/)
 that pulls trivia questions from the [Open Trivia
 Database](https://opentdb.com/) and keeps every answer, score, and filter in a
 single **Async Redux** store — supporting Android, iOS, and Web.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.7-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-2.7+-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Async Redux](https://img.shields.io/badge/Async_Redux-13.1.0-764ABC?logo=redux&logoColor=white)](https://pub.dev/packages/async_redux)
 
 </div>
 
