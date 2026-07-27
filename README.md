@@ -146,6 +146,13 @@ Android and `build/web` for the web bundle.
   Database](https://opentdb.com/), licensed under
   [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
+## Contributing
+
+Contributions are welcome! If you find a bug or have a feature request, please
+[open an issue](https://github.com/kaushalmeena/quiz-it/issues/new/choose)
+first to discuss it. For code changes, fork the repository, create a branch,
+and open a pull request.
+
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE)
