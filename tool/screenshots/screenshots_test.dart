@@ -194,13 +194,10 @@ Future<void> _loadFonts() async {
 
 /// Pumps the app with a controllable clock. Returns a function that moves
 /// the clock and the test's frames forward together.
-Future<Future<void> Function(Duration)> _pumpApp(
-  WidgetTester tester, {
-  Brightness brightness = Brightness.light,
-}) async {
+Future<Future<void> Function(Duration)> _pumpApp(WidgetTester tester) async {
   tester.view.physicalSize = _size;
   tester.view.devicePixelRatio = _pixelRatio;
-  tester.platformDispatcher.platformBrightnessTestValue = brightness;
+  tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
   addTearDown(tester.view.reset);
   addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
 
@@ -286,15 +283,5 @@ void main() {
     }
     await tester.pumpAndSettle();
     await _snap('results');
-  });
-
-  testWidgets('quiz in dark mode', (tester) async {
-    final advance = await _pumpApp(tester, brightness: Brightness.dark);
-    await _startQuiz(tester);
-
-    await advance(const Duration(seconds: 7));
-    await tester.tap(find.text(_wrong(0)));
-    await advance(const Duration(milliseconds: 400));
-    await _snap('dark');
   });
 }

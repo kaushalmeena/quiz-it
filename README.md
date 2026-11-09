@@ -21,10 +21,9 @@ answers. Runs on Android, iOS, and Web.
 
 <table>
   <tr>
-    <td width="25%"><img src="screenshots/home.png" alt="Home screen with the daily challenge, lifetime stats and quiz options"></td>
-    <td width="25%"><img src="screenshots/quiz.png" alt="Timed question answered correctly, with points and a 4-answer streak"></td>
-    <td width="25%"><img src="screenshots/results.png" alt="Results with a 90% score ring, points, best streak and answer review"></td>
-    <td width="25%"><img src="screenshots/dark.png" alt="Question in dark mode with a wrong answer and the correct one revealed"></td>
+    <td width="33%"><img src="screenshots/home.png" alt="Home screen with the daily challenge, lifetime stats and quiz options"></td>
+    <td width="33%"><img src="screenshots/quiz.png" alt="Timed question answered correctly, with points and a 4-answer streak"></td>
+    <td width="33%"><img src="screenshots/results.png" alt="Results with a 90% score ring, points, best streak and answer review"></td>
   </tr>
 </table>
 
