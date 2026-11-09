@@ -69,8 +69,11 @@ void main() {
     await tester.tap(find.text('Home'));
     await tester.pumpAndSettle();
 
-    // Lifetime stats now show on the home screen.
+    // Lifetime stats and the category record now show on the home screen.
     expect(find.text('Quiz played'), findsOneWidget);
+    final record = find.text('Best 50% · 50% accuracy');
+    await tester.scrollUntilVisible(record, 200);
+    expect(record, findsOneWidget);
     expect(find.text('50%'), findsOneWidget);
   });
 

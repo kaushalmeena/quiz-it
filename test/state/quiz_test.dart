@@ -161,4 +161,36 @@ void main() {
     quiz.timeOut();
     expect(container.read(quizProvider)!.current.isAnswered, isFalse);
   });
+
+  test('records results per category', () async {
+    final storage = MemoryStorage();
+    final container = createContainer(storage: storage);
+    final quiz = container.read(quizProvider.notifier);
+
+    Future<void> play(int? categoryId, List<String> answers) async {
+      container.read(settingsProvider.notifier).selectCategory(categoryId);
+      await quiz.start();
+      for (final answer in answers) {
+        quiz
+          ..answer(answer)
+          ..next();
+      }
+      quiz.finish();
+    }
+
+    await play(22, ['4', '4', '4']);
+    await play(22, ['4', '5', '5']);
+    await play(null, ['5', '5', '5']);
+
+    final stats = container.read(statsProvider);
+    final geography = stats.forCategory(22)!;
+    expect(geography.quizzesPlayed, 2);
+    expect(geography.bestScore, 1);
+    expect(geography.accuracy, closeTo(4 / 6, 0.001));
+    expect(stats.forCategory(null)!.bestScore, 0);
+    expect(stats.forCategory(9), isNull);
+
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(statsProvider), stats);
+  });
 }

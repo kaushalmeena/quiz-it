@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/catalog.dart';
 import '../../models/category.dart';
 import '../../state/settings.dart';
+import '../../state/stats.dart';
 
 /// A responsive grid of selectable category tiles.
 class CategoryGrid extends StatelessWidget {
@@ -14,7 +15,7 @@ class CategoryGrid extends StatelessWidget {
     return SliverGrid.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
-        mainAxisExtent: 108,
+        mainAxisExtent: 128,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
       ),
@@ -34,9 +35,15 @@ class _CategoryTile extends ConsumerWidget {
     final selected = ref.watch(
       settingsProvider.select((s) => s.categoryId == category.id),
     );
+    final record = ref.watch(
+      statsProvider.select((s) => s.forCategory(category.id)),
+    );
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final radius = BorderRadius.circular(20);
+    final mutedColor = selected
+        ? scheme.onPrimaryContainer.withValues(alpha: 0.8)
+        : scheme.onSurfaceVariant;
 
     void handleTap() {
       ref.read(settingsProvider.notifier).selectCategory(category.id);
@@ -93,15 +100,37 @@ class _CategoryTile extends ConsumerWidget {
                         Icon(Icons.check_circle, color: scheme.primary),
                     ],
                   ),
-                  Text(
-                    category.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: selected
-                          ? scheme.onPrimaryContainer
-                          : scheme.onSurface,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        category.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: selected
+                              ? scheme.onPrimaryContainer
+                              : scheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      // Reserved even before the first quiz, so every tile
+                      // keeps the same layout.
+                      SizedBox(
+                        height: 16,
+                        child: record == null
+                            ? null
+                            : Text(
+                                'Best ${(record.bestScore * 100).round()}% · '
+                                '${(record.accuracy * 100).round()}% accuracy',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: mutedColor,
+                                ),
+                              ),
+                      ),
+                    ],
                   ),
                 ],
               ),
