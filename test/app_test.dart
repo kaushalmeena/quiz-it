@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_it/app.dart';
 import 'package:quiz_it/data/api.dart';
+import 'package:quiz_it/state/effects.dart';
 import 'package:quiz_it/state/quiz.dart';
 import 'package:quiz_it/state/settings.dart';
 import 'package:quiz_it/state/storage.dart';
@@ -15,6 +16,7 @@ Future<void> pumpApp(
   WidgetTester tester, {
   http.Client? client,
   Storage? storage,
+  Effects? effects,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.75;
@@ -24,6 +26,7 @@ Future<void> pumpApp(
     ProviderScope(
       overrides: [
         storageProvider.overrideWithValue(storage ?? MemoryStorage()),
+        effectsProvider.overrideWithValue(effects ?? SilentEffects()),
         triviaApiProvider.overrideWithValue(
           TriviaApi(client: client ?? mockTrivia()),
         ),
@@ -35,8 +38,10 @@ Future<void> pumpApp(
 
 void main() {
   testWidgets('plays a full round from setup to results', (tester) async {
+    final effects = SilentEffects();
     await pumpApp(
       tester,
+      effects: effects,
       client: mockTrivia(
         results: [
           apiQuestion(question: 'First?', correct: 'Yes', incorrect: ['No']),
@@ -70,6 +75,8 @@ void main() {
     expect(find.text('Results'), findsOneWidget);
     expect(find.text('50%'), findsOneWidget);
     expect(find.text('Not bad!'), findsOneWidget);
+    // No confetti for 50%.
+    expect(effects.played, [Effect.correct, Effect.wrong]);
 
     await tester.tap(find.text('Home'));
     await tester.pumpAndSettle();
@@ -170,5 +177,35 @@ void main() {
 
     expect(find.text("Time's up! Answer: 4"), findsOneWidget);
     expect(find.text('0s'), findsOneWidget);
+  });
+
+  testWidgets('celebrates high scores', (tester) async {
+    final effects = SilentEffects();
+    await pumpApp(
+      tester,
+      effects: effects,
+      client: mockTrivia(results: [apiQuestion()]),
+    );
+
+    await tester.tap(find.text('Start quiz · 10 questions'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('4'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('See results'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Outstanding!'), findsOneWidget);
+    expect(effects.played, [Effect.correct, Effect.celebrate]);
+  });
+
+  testWidgets('remembers the sound setting', (tester) async {
+    final storage = MemoryStorage();
+    await pumpApp(tester, storage: storage);
+
+    await tester.tap(find.byTooltip('Mute sound effects'));
+    await tester.pump();
+
+    expect(find.byTooltip('Turn on sound effects'), findsOneWidget);
+    expect(storage.values[SoundNotifier.storageKey], 'off');
   });
 }

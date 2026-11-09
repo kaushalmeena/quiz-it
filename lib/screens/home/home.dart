@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../state/effects.dart';
 import '../../state/settings.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/start_button.dart';
@@ -27,7 +28,11 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(pinned: true, title: _Brand()),
+          const SliverAppBar(
+            pinned: true,
+            title: _Brand(),
+            actions: [_SoundToggle(), SizedBox(width: 8)],
+          ),
           SliverPadding(
             padding: insets.copyWith(top: 8),
             sliver: SliverList.list(
@@ -79,6 +84,23 @@ class _Brand extends StatelessWidget {
         const SizedBox(width: 12),
         const Text('Quiz-It'),
       ],
+    );
+  }
+}
+
+class _SoundToggle extends ConsumerWidget {
+  const _SoundToggle();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final on = ref.watch(soundProvider);
+
+    void handlePressed() => ref.read(soundProvider.notifier).toggle();
+
+    return IconButton(
+      onPressed: handlePressed,
+      tooltip: on ? 'Mute sound effects' : 'Turn on sound effects',
+      icon: Icon(on ? Icons.volume_up_rounded : Icons.volume_off_rounded),
     );
   }
 }

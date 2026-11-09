@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../state/clock.dart';
 import '../../state/daily.dart';
+import '../../state/effects.dart';
 import '../../state/quiz.dart';
 import '../../theme/palette.dart';
+import '../../widgets/confetti.dart';
 import '../../widgets/layout.dart';
 import '../../widgets/stat_tile.dart';
 import '../../widgets/start_button.dart';
@@ -37,92 +39,126 @@ class ResultsScreen extends ConsumerWidget {
 
     void goHome() => Navigator.of(context).pop();
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        title: Text(session.isDaily ? 'Daily challenge' : 'Results'),
-      ),
-      body: ListView(
-        padding: contentInsets(context).copyWith(top: 16, bottom: 24),
-        children: [
-          Center(
-            child: ScoreRing(
-              score: session.score,
-              correct: session.correctCount,
-              total: session.total,
+    return _Celebration(
+      active: session.score >= celebrateScore,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const CloseButton(),
+          title: Text(session.isDaily ? 'Daily challenge' : 'Results'),
+        ),
+        body: ListView(
+          padding: contentInsets(context).copyWith(top: 16, bottom: 24),
+          children: [
+            Center(
+              child: ScoreRing(
+                score: session.score,
+                correct: session.correctCount,
+                total: session.total,
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            verdict.title,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            [
-              verdict.subtitle,
-              'Finished in ${_formatDuration(session.elapsed)}.',
-              if (session.isDaily)
-                dailyStreak == 1
-                    ? 'Daily streak started. See you tomorrow!'
-                    : 'Daily streak: $dailyStreak days. See you tomorrow!',
-            ].join('\n'),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            const SizedBox(height: 24),
+            Text(
+              verdict.title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.headlineMedium,
             ),
-          ),
-          const SizedBox(height: 24),
-          StatRow(
-            children: [
-              StatTile(
-                icon: Icons.check_circle_outline_rounded,
-                color: Palette.of(context).success,
-                value: '${session.correctCount}/${session.total}',
-                label: 'Correct',
+            const SizedBox(height: 4),
+            Text(
+              [
+                verdict.subtitle,
+                'Finished in ${_formatDuration(session.elapsed)}.',
+                if (session.isDaily)
+                  dailyStreak == 1
+                      ? 'Daily streak started. See you tomorrow!'
+                      : 'Daily streak: $dailyStreak days. See you tomorrow!',
+              ].join('\n'),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-              StatTile(
-                icon: Icons.star_outline_rounded,
-                value: '${session.points}',
-                label: session.isTimed ? 'Points (timed)' : 'Points',
-              ),
-              StatTile(
-                icon: Icons.local_fire_department_outlined,
-                color: Colors.deepOrange,
-                value: '${session.bestStreak}',
-                label: 'Best streak',
-              ),
-            ],
-          ),
-          const SectionTitle('Review answers'),
-          AnswerReview(session: session),
-        ],
-      ),
-      bottomNavigationBar: BottomActionBar(
-        child: session.isDaily
-            ? FilledButton(onPressed: goHome, child: const Text('Done'))
-            : Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: goHome,
-                      child: const Text('Home'),
+            ),
+            const SizedBox(height: 24),
+            StatRow(
+              children: [
+                StatTile(
+                  icon: Icons.check_circle_outline_rounded,
+                  color: Palette.of(context).success,
+                  value: '${session.correctCount}/${session.total}',
+                  label: 'Correct',
+                ),
+                StatTile(
+                  icon: Icons.star_outline_rounded,
+                  value: '${session.points}',
+                  label: session.isTimed ? 'Points (timed)' : 'Points',
+                ),
+                StatTile(
+                  icon: Icons.local_fire_department_outlined,
+                  color: Colors.deepOrange,
+                  value: '${session.bestStreak}',
+                  label: 'Best streak',
+                ),
+              ],
+            ),
+            const SectionTitle('Review answers'),
+            AnswerReview(session: session),
+          ],
+        ),
+        bottomNavigationBar: BottomActionBar(
+          child: session.isDaily
+              ? FilledButton(onPressed: goHome, child: const Text('Done'))
+              : Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: goHome,
+                        child: const Text('Home'),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: StartQuizButton(
-                      label: 'Play again',
-                      icon: Icons.replay_rounded,
-                      onStarted: _playAgain,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: StartQuizButton(
+                        label: 'Play again',
+                        icon: Icons.replay_rounded,
+                        onStarted: _playAgain,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+        ),
       ),
     );
+  }
+}
+
+/// Scores at or above this share of correct answers get confetti.
+const celebrateScore = 0.8;
+
+/// Confetti and a fanfare, once, when the results first appear.
+class _Celebration extends ConsumerStatefulWidget {
+  const _Celebration({required this.active, required this.child});
+
+  final bool active;
+  final Widget child;
+
+  @override
+  ConsumerState<_Celebration> createState() => _CelebrationState();
+}
+
+class _CelebrationState extends ConsumerState<_Celebration> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.active) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.read(effectsProvider).play(Effect.celebrate);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Confetti(active: widget.active, child: widget.child);
   }
 }
 

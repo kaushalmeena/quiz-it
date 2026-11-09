@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/session.dart';
+import '../../state/effects.dart';
 import '../../state/quiz.dart';
 import '../../widgets/layout.dart';
 import '../results/results.dart';
@@ -66,6 +67,17 @@ class QuizScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(quizProvider);
     if (session == null) return const Scaffold();
+
+    ref.listen(quizProvider, (previous, next) {
+      if (previous == null || next == null || previous.index != next.index) {
+        return;
+      }
+      if (!previous.current.isAnswered && next.current.isAnswered) {
+        ref
+            .read(effectsProvider)
+            .play(next.current.isCorrect ? Effect.correct : Effect.wrong);
+      }
+    });
 
     Future<void> handlePop(bool didPop, Object? result) async {
       if (didPop) return;

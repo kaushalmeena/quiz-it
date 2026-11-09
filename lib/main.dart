@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'state/daily.dart';
+import 'state/effects.dart';
 import 'state/settings.dart';
 import 'state/stats.dart';
 import 'state/storage.dart';
@@ -14,6 +15,7 @@ Future<void> main() async {
     SettingsNotifier.storageKey,
     StatsNotifier.storageKey,
     DailyNotifier.storageKey,
+    SoundNotifier.storageKey,
   });
 
   runApp(
