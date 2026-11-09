@@ -20,7 +20,7 @@ class StatsSummary extends ConsumerWidget {
           StatTile(
             icon: Icons.emoji_events_outlined,
             value: '${stats.quizzesPlayed}',
-            label: stats.quizzesPlayed == 1 ? 'Quiz played' : 'Quizzes played',
+            label: stats.quizzesPlayed == 1 ? 'Quiz' : 'Quizzes',
           ),
           StatTile(
             icon: Icons.track_changes_rounded,

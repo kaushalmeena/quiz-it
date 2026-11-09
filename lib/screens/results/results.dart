@@ -89,7 +89,7 @@ class ResultsScreen extends ConsumerWidget {
                 StatTile(
                   icon: Icons.star_outline_rounded,
                   value: '${session.points}',
-                  label: session.isTimed ? 'Points (timed)' : 'Points',
+                  label: 'Points',
                 ),
                 StatTile(
                   icon: Icons.local_fire_department_outlined,

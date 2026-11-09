@@ -19,13 +19,12 @@ answers. Runs on Android, iOS, and Web.
 
 ## Screenshots
 
-> These screenshots are from v1 and will be refreshed for the v2 redesign.
-
 <table>
   <tr>
-    <td width="33%"><img src="screenshots/HomeScreen.png" alt="Home screen listing quiz questions"></td>
-    <td width="33%"><img src="screenshots/FilterBottomSheet.png" alt="Filter bottom sheet with category, difficulty, and amount"></td>
-    <td width="33%"><img src="screenshots/QuestionCard.png" alt="Question card with multiple choice answers"></td>
+    <td width="25%"><img src="screenshots/home.png" alt="Home screen with the daily challenge, lifetime stats and quiz options"></td>
+    <td width="25%"><img src="screenshots/quiz.png" alt="Timed question answered correctly, with points and a 4-answer streak"></td>
+    <td width="25%"><img src="screenshots/results.png" alt="Results with a 90% score ring, points, best streak and answer review"></td>
+    <td width="25%"><img src="screenshots/dark.png" alt="Question in dark mode with a wrong answer and the correct one revealed"></td>
   </tr>
 </table>
 
@@ -88,7 +87,8 @@ assets/
 
 tool/
 ├── build_daily_bank.dart  # Re-downloads the daily question bank
-└── logo.py                # Renders all app icons from the logo design
+├── logo.py                # Renders all app icons from the logo design
+└── screenshots/           # Renders the README screenshots
 ```
 
 ## Tech Stack
@@ -196,6 +196,13 @@ uses macOS `sips`):
 
 ```bash
 python3 tool/logo.py
+```
+
+To re-render the README screenshots after a UI change (uses the fonts that
+ship with Flutter, a fixed date and sample data, so the output is stable):
+
+```bash
+flutter test tool/screenshots --update-goldens
 ```
 
 ## Credits
