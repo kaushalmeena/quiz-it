@@ -11,6 +11,9 @@ ThemeData buildTheme(Brightness brightness) {
   final scheme = ColorScheme.fromSeed(
     seedColor: brandColor,
     brightness: brightness,
+    // Keeps the primary colour close to the logo's violet instead of the
+    // muted tone the default variant derives from it.
+    dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
   );
   final base = ThemeData(colorScheme: scheme, brightness: brightness);
   final text = base.textTheme;
