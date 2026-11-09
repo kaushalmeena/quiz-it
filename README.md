@@ -36,12 +36,24 @@ answers. Runs on Android, iOS, and Web.
   setting, and a centred layout that scales from phones to desktop browsers.
 - **Quiz setup** — choose from 24 categories, a difficulty, multiple choice or
   true / false questions, and a round of 5–20 questions.
+- **Daily challenge** — 10 timed questions a day, the same for every player,
+  with a daily streak. Works offline from a bundled question bank.
+- **Timed mode** — an optional 20-second countdown per question; faster
+  answers earn up to double points.
 - **Focused quiz flow** — one question at a time with a progress bar, instant
-  right / wrong feedback, and a running score and streak.
-- **Results and review** — an animated score, round stats, and a review of
-  every question with the correct answer.
-- **Lifetime stats** — quizzes played, accuracy, and best streak, saved on the
-  device along with your last quiz settings.
+  right / wrong feedback, a running score and streak, and questions that
+  slide in from the right.
+- **Keyboard shortcuts** — 1–4 (or A–D) to answer and Enter to continue, on
+  web and desktop.
+- **Sound, vibration, and confetti** — feedback on every answer (with a mute
+  toggle) and a confetti burst for scores of 80% or more.
+- **Results and review** — an animated score, points, round stats, and a
+  review of every question with the correct answer.
+- **Stats that stick** — quizzes played, accuracy, and best streak overall,
+  plus your best score and accuracy on every category tile. Saved on the
+  device along with your settings.
+- **No repeats** — an Open Trivia DB session token stops questions repeating
+  while the app is open.
 - **Friendly errors** — clear, retryable messages when you're offline, the API
   is rate limited, or a category doesn't have enough questions.
 
@@ -62,12 +74,21 @@ answers. Runs on Android, iOS, and Web.
 lib/
 ├── main.dart           # Opens storage and starts the app
 ├── app.dart            # MaterialApp and themes
-├── data/               # Open Trivia DB client and category catalog
+├── data/               # Open Trivia DB client, category catalog, daily bank
 ├── models/             # Immutable models: question, session, settings, stats
-├── state/              # Riverpod notifiers and persistent storage
+├── state/              # Riverpod notifiers, storage, sound and haptics
 ├── screens/            # home/, quiz/ and results/, each with its own widgets
 ├── widgets/            # Widgets shared between screens
 └── theme/              # Material 3 theme and extra semantic colours
+
+assets/
+├── logo.svg            # Master logo; every app icon is rendered from it
+├── daily/              # Bundled question bank for the daily challenge
+└── sounds/             # Sound effects
+
+tool/
+├── build_daily_bank.dart  # Re-downloads the daily question bank
+└── logo.py                # Renders all app icons from the logo design
 ```
 
 ## Tech Stack
@@ -78,6 +99,7 @@ lib/
 | **State**      | [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)                                                               |
 | **Networking** | [http](https://pub.dev/packages/http)                                                                                       |
 | **Storage**    | [shared_preferences](https://pub.dev/packages/shared_preferences)                                                           |
+| **Audio**      | [audioplayers](https://pub.dev/packages/audioplayers)                                                                       |
 | **Data**       | [Open Trivia Database](https://opentdb.com/)                                                                                |
 | **Testing**    | [flutter_test](https://docs.flutter.dev/testing)                                                                            |
 | **Tooling**    | [Flutter CLI](https://flutter.dev/docs/get-started/install) · [flutter_lints](https://pub.dev/packages/flutter_lints)       |
@@ -159,11 +181,30 @@ flutter build web      # Web
 The build output is written to the `build/` folder — `build/app/outputs` for
 Android and `build/web` for the web bundle.
 
+### Regenerating assets
+
+To rebuild the daily challenge question bank (takes about two minutes because
+of the API's rate limit):
+
+```bash
+dart run tool/build_daily_bank.dart
+```
+
+To re-render the logo and every app icon after editing the design in
+`tool/logo.py` (needs `rsvg-convert` from `brew install librsvg`; the iOS step
+uses macOS `sips`):
+
+```bash
+python3 tool/logo.py
+```
+
 ## Credits
 
 - Trivia questions provided by the [Open Trivia
   Database](https://opentdb.com/), licensed under
-  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The
+  bundled daily question bank (`assets/daily/questions.json`) is an unmodified
+  selection of those questions under the same licence.
 
 ## Contributing
 
