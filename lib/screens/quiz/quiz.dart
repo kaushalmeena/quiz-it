@@ -104,13 +104,21 @@ class QuizScreen extends ConsumerWidget {
             bottom: _Progress(session),
           ),
           body: SingleChildScrollView(
-            padding: contentInsets(context).copyWith(top: 24, bottom: 24),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              transitionBuilder: _slideFade,
-              child: QuestionView(
-                key: ValueKey(session.index),
-                question: session.current,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            // Clip to the full screen width so questions slide in from the
+            // screen edge rather than from the content column's edge.
+            child: ClipRect(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 320),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                layoutBuilder: _stackTop,
+                transitionBuilder: _slideFor(session.index),
+                child: Padding(
+                  key: ValueKey(session.index),
+                  padding: contentInsets(context),
+                  child: QuestionView(question: session.current),
+                ),
               ),
             ),
           ),
@@ -130,14 +138,24 @@ class QuizScreen extends ConsumerWidget {
     );
   }
 
-  static Widget _slideFade(Widget child, Animation<double> animation) {
-    final offset = Tween(
-      begin: const Offset(0.04, 0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
-    return FadeTransition(
-      opacity: animation,
-      child: SlideTransition(position: offset, child: child),
+  /// Slides the new question in from the right and the old one out to the
+  /// left. The builder is recreated each build, so AnimatedSwitcher re-wraps
+  /// the outgoing question with the leftward slide.
+  static AnimatedSwitcherTransitionBuilder _slideFor(int index) {
+    return (child, animation) {
+      final incoming = child.key == ValueKey(index);
+      final offset = Tween(
+        begin: Offset(incoming ? 1 : -1, 0),
+        end: Offset.zero,
+      ).animate(animation);
+      return SlideTransition(position: offset, child: child);
+    };
+  }
+
+  static Widget _stackTop(Widget? current, List<Widget> previous) {
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [...previous, ?current],
     );
   }
 
