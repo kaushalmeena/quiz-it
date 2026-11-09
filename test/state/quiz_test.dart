@@ -16,7 +16,7 @@ ProviderContainer createContainer({http.Client? client, Storage? storage}) {
     overrides: [
       storageProvider.overrideWithValue(storage ?? MemoryStorage()),
       triviaApiProvider.overrideWithValue(
-        TriviaApi(client: client ?? mockTrivia()),
+        TriviaApi(client: client ?? mockTrivia(), retryDelay: Duration.zero),
       ),
     ],
   );
@@ -60,7 +60,7 @@ void main() {
 
     await container.read(quizProvider.notifier).start();
 
-    expect(requests.single.queryParameters['amount'], '5');
+    expect(questionRequests(requests).single.queryParameters['amount'], '5');
     expect(container.read(quizProvider)?.total, 3);
     expect(container.read(quizProvider)?.index, 0);
   });

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -60,6 +62,93 @@ void main() {
     expect(await errorFor(code: 2), TriviaError.unknown);
     expect(await errorFor(status: 429), TriviaError.rateLimited);
     expect(await errorFor(status: 500), TriviaError.unknown);
+  });
+
+  group('session token', () {
+    TriviaApi createApi(MockClient client) =>
+        TriviaApi(client: client, retryDelay: Duration.zero);
+
+    test('is requested once and sent with every question request', () async {
+      final requests = <Uri>[];
+      final api = createApi(mockTrivia(requests: requests));
+
+      await api.fetchQuestions(const QuizSettings());
+      await api.fetchQuestions(const QuizSettings());
+
+      expect(requests.where((uri) => uri.path == '/api_token.php'), [
+        TriviaApi.tokenUri('request'),
+      ]);
+      expect(
+        questionRequests(requests).map((uri) => uri.queryParameters['token']),
+        ['token-1', 'token-1'],
+      );
+    });
+
+    test('is renewed when it has expired', () async {
+      final requests = <Uri>[];
+      final api = createApi(
+        mockTrivia(requests: requests, responseCodes: [3, 0]),
+      );
+
+      final questions = await api.fetchQuestions(const QuizSettings());
+
+      expect(questions, hasLength(3));
+      expect(
+        questionRequests(requests).map((uri) => uri.queryParameters['token']),
+        ['token-1', 'token-2'],
+      );
+    });
+
+    test('is reset once every question has been served', () async {
+      final requests = <Uri>[];
+      final api = createApi(
+        mockTrivia(requests: requests, responseCodes: [4, 0]),
+      );
+
+      final questions = await api.fetchQuestions(const QuizSettings());
+
+      expect(questions, hasLength(3));
+      expect(requests, contains(TriviaApi.tokenUri('reset', token: 'token-1')));
+      expect(questionRequests(requests), hasLength(2));
+    });
+
+    test('retries only once', () async {
+      final requests = <Uri>[];
+      final api = createApi(mockTrivia(requests: requests, responseCodes: [3]));
+
+      await expectLater(
+        api.fetchQuestions(const QuizSettings()),
+        throwsA(isA<TriviaException>()),
+      );
+      expect(questionRequests(requests), hasLength(2));
+    });
+
+    test('is skipped if the API refuses to issue one', () async {
+      final requests = <Uri>[];
+      final api = createApi(
+        MockClient((request) async {
+          requests.add(request.url);
+          if (request.url.path == '/api_token.php') {
+            return http.Response('oops', 500);
+          }
+          return http.Response(
+            json.encode({
+              'response_code': 0,
+              'results': [apiQuestion(), apiQuestion(), apiQuestion()],
+            }),
+            200,
+          );
+        }),
+      );
+
+      final questions = await api.fetchQuestions(const QuizSettings());
+
+      expect(questions, hasLength(3));
+      expect(
+        questionRequests(requests).single.queryParameters,
+        isNot(contains('token')),
+      );
+    });
   });
 
   test('reports network failures', () async {
