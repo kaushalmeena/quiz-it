@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'palette.dart';
 
-const brandColor = Color(0xFF673AB7);
+const brandColor = Color(0xFF6A3DE8);
 
 /// Max width of the main content column on wide screens (tablet / web).
 const contentMaxWidth = 720.0;
