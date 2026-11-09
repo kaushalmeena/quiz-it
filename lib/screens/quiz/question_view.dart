@@ -5,6 +5,7 @@ import '../../models/category.dart';
 import '../../models/question.dart';
 import '../../state/quiz.dart';
 import '../../theme/palette.dart';
+import '../../theme/radii.dart';
 
 /// A question with its tags and answer options.
 class QuestionView extends StatelessWidget {
@@ -51,7 +52,7 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: Radii.small,
       ),
       child: Text(
         label,
@@ -86,7 +87,7 @@ class _AnswerTile extends ConsumerWidget {
     final scheme = theme.colorScheme;
     final palette = Palette.of(context);
     final state = this.state;
-    final radius = BorderRadius.circular(16);
+    const radius = Radii.medium;
 
     void handleTap() => ref.read(quizProvider.notifier).answer(answer);
 

@@ -24,7 +24,7 @@ class QuizOptions extends StatelessWidget {
             _Option(label: 'Question type', picker: _TypePicker()),
             SizedBox(height: 20),
             _Option(label: 'Number of questions', picker: _AmountPicker()),
-            SizedBox(height: 12),
+            SizedBox(height: 20),
             _TimedSwitch(),
           ],
         ),
@@ -142,15 +142,35 @@ class _TimedSwitch extends ConsumerWidget {
       ref.read(settingsProvider.notifier).setTimed(value);
     }
 
-    return SwitchListTile(
-      contentPadding: EdgeInsets.zero,
-      secondary: const Icon(Icons.timer_outlined),
-      title: const Text('Timed mode'),
-      subtitle: Text(
-        '$seconds s per question · faster answers earn bonus points',
+    final theme = Theme.of(context);
+
+    // Laid out like the other options: label on the left edge, control on
+    // the right, rather than a list tile with its own icon and type sizes.
+    return MergeSemantics(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Timed mode',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$seconds s per question. Faster answers earn bonus points.',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Switch(value: timed, onChanged: handleChanged),
+        ],
       ),
-      value: timed,
-      onChanged: handleChanged,
     );
   }
 }

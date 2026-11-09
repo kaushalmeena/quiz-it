@@ -10,6 +10,9 @@ import '../results/results.dart';
 import 'countdown.dart';
 import 'feedback.dart';
 import 'question_view.dart';
+import '../../theme/palette.dart';
+import '../../theme/radii.dart';
+import '../../utils/format.dart';
 
 /// Keys that pick the first, second, third… answer.
 final _answerKeys = [
@@ -136,7 +139,7 @@ class QuizScreen extends ConsumerWidget {
                   ),
                 ClipRect(
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 320),
+                    duration: const Duration(milliseconds: 260),
                     switchInCurve: Curves.easeOutCubic,
                     switchOutCurve: Curves.easeInCubic,
                     layoutBuilder: _stackTop,
@@ -253,16 +256,16 @@ class _ScorePill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: scheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: Radii.pill,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (streak >= 2) ...[
-              const Icon(
+              Icon(
                 Icons.local_fire_department_rounded,
                 size: 18,
-                color: Colors.deepOrange,
+                color: Palette.of(context).streak,
               ),
               Text(
                 '$streak',
@@ -279,7 +282,7 @@ class _ScorePill extends StatelessWidget {
               tween: IntTween(end: session.points),
               duration: const Duration(milliseconds: 500),
               builder: (context, value, _) => Text(
-                '$value',
+                formatNumber(value),
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: scheme.onSecondaryContainer,
                   fontWeight: FontWeight.w700,

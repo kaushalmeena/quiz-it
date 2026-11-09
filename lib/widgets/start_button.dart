@@ -13,6 +13,7 @@ class StartQuizButton extends ConsumerStatefulWidget {
     required this.onStarted,
     this.icon = Icons.play_arrow_rounded,
     this.daily = false,
+    this.tonal = false,
   });
 
   final String label;
@@ -20,6 +21,10 @@ class StartQuizButton extends ConsumerStatefulWidget {
 
   /// Starts today's daily challenge instead of a quiz with the user's settings.
   final bool daily;
+
+  /// A secondary action: tonal instead of filled, for when another button on
+  /// screen is the primary one.
+  final bool tonal;
   final void Function(BuildContext context) onStarted;
 
   @override
@@ -52,21 +57,25 @@ class _StartQuizButtonState extends ConsumerState<StartQuizButton> {
 
   @override
   Widget build(BuildContext context) {
-    final onPrimary = Theme.of(context).colorScheme.onPrimary;
+    final scheme = Theme.of(context).colorScheme;
+    final spinnerColor = widget.tonal
+        ? scheme.onSecondaryContainer
+        : scheme.onPrimary;
+    final icon = _loading
+        ? SizedBox.square(
+            dimension: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: spinnerColor,
+            ),
+          )
+        : Icon(widget.icon);
+    final label = Text(_loading ? 'Loading questions…' : widget.label);
+
     // The button stays the same size and colour while loading; only the icon
     // and label swap, so nothing around it shifts.
-    return FilledButton.icon(
-      onPressed: _start,
-      icon: _loading
-          ? SizedBox.square(
-              dimension: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                color: onPrimary,
-              ),
-            )
-          : Icon(widget.icon),
-      label: Text(_loading ? 'Loading questions…' : widget.label),
-    );
+    return widget.tonal
+        ? FilledButton.tonalIcon(onPressed: _start, icon: icon, label: label)
+        : FilledButton.icon(onPressed: _start, icon: icon, label: label);
   }
 }

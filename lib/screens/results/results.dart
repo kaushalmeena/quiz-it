@@ -5,11 +5,10 @@ import '../../state/clock.dart';
 import '../../state/daily.dart';
 import '../../state/effects.dart';
 import '../../state/quiz.dart';
-import '../../theme/palette.dart';
 import '../../widgets/confetti.dart';
 import '../../widgets/layout.dart';
-import '../../widgets/stat_tile.dart';
 import '../../widgets/start_button.dart';
+import '../../utils/format.dart';
 import '../quiz/quiz.dart';
 import 'review.dart';
 import 'score_ring.dart';
@@ -64,59 +63,50 @@ class ResultsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              [
-                verdict.subtitle,
-                'Finished in ${_formatDuration(session.elapsed)}.',
-                if (session.isDaily)
-                  dailyStreak == 1
-                      ? 'Daily streak started. See you tomorrow!'
-                      : 'Daily streak: $dailyStreak days. See you tomorrow!',
-              ].join('\n'),
+              verdict.subtitle,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 24),
-            StatRow(
-              children: [
-                StatTile(
-                  icon: Icons.check_circle_outline_rounded,
-                  color: Palette.of(context).success,
-                  value: '${session.correctCount}/${session.total}',
-                  label: 'Correct',
-                ),
-                StatTile(
-                  icon: Icons.star_outline_rounded,
-                  value: '${session.points}',
-                  label: 'Points',
-                ),
-                StatTile(
-                  icon: Icons.local_fire_department_outlined,
-                  color: Colors.deepOrange,
-                  value: '${session.bestStreak}',
-                  label: 'Best streak',
-                ),
-              ],
+            const SizedBox(height: 16),
+            _RoundFigures(
+              points: session.points,
+              bestStreak: session.bestStreak,
+              elapsed: session.elapsed,
             ),
+            if (session.isDaily) ...[
+              const SizedBox(height: 4),
+              Text(
+                dailyStreak == 1
+                    ? 'Daily streak started. See you tomorrow.'
+                    : 'Daily streak: $dailyStreak days. See you tomorrow.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
             const SectionTitle('Review answers'),
             AnswerReview(session: session),
           ],
         ),
         bottomNavigationBar: BottomActionBar(
           child: session.isDaily
-              ? FilledButton(onPressed: goHome, child: const Text('Done'))
+              ? FilledButton(
+                  onPressed: goHome,
+                  child: const Text('Back to home'),
+                )
               : Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: goHome,
-                        child: const Text('Home'),
+                        child: const Text('Back to home'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      flex: 2,
                       child: StartQuizButton(
                         label: 'Play again',
                         icon: Icons.replay_rounded,
@@ -162,10 +152,43 @@ class _CelebrationState extends ConsumerState<_Celebration> {
   }
 }
 
-String _formatDuration(Duration duration) {
-  final minutes = duration.inMinutes;
-  final seconds = duration.inSeconds % 60;
-  return minutes == 0 ? '${seconds}s' : '${minutes}m ${seconds}s';
+/// Points, best streak and time for the round, as one line of figures.
+class _RoundFigures extends StatelessWidget {
+  const _RoundFigures({
+    required this.points,
+    required this.bestStreak,
+    required this.elapsed,
+  });
+
+  final int points;
+  final int bestStreak;
+  final Duration elapsed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final figure = TextStyle(
+      color: theme.colorScheme.onSurface,
+      fontWeight: FontWeight.w600,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+
+    return Text.rich(
+      TextSpan(
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        children: [
+          TextSpan(text: formatNumber(points), style: figure),
+          const TextSpan(text: ' points · best streak '),
+          TextSpan(text: '$bestStreak', style: figure),
+          const TextSpan(text: ' · '),
+          TextSpan(text: formatDuration(elapsed), style: figure),
+        ],
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
 }
 
 class _Verdict {

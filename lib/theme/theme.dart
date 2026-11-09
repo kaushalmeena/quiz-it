@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'palette.dart';
+import 'radii.dart';
 
 const brandColor = Color(0xFF6A3DE8);
 
@@ -17,9 +18,7 @@ ThemeData buildTheme(Brightness brightness) {
   );
   final base = ThemeData(colorScheme: scheme, brightness: brightness);
   final text = base.textTheme;
-  final buttonShape = RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
-  );
+  const buttonShape = RoundedRectangleBorder(borderRadius: Radii.medium);
   final buttonText = text.titleMedium?.copyWith(fontWeight: FontWeight.w600);
 
   return base.copyWith(
@@ -48,7 +47,7 @@ ThemeData buildTheme(Brightness brightness) {
       elevation: 0,
       margin: EdgeInsets.zero,
       color: scheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: const RoundedRectangleBorder(borderRadius: Radii.large),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(

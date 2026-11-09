@@ -8,6 +8,7 @@ class Palette extends ThemeExtension<Palette> {
     required this.onSuccess,
     required this.successContainer,
     required this.onSuccessContainer,
+    required this.streak,
   });
 
   static const light = Palette(
@@ -15,6 +16,7 @@ class Palette extends ThemeExtension<Palette> {
     onSuccess: Color(0xFFFFFFFF),
     successContainer: Color(0xFFCBF0D6),
     onSuccessContainer: Color(0xFF00210F),
+    streak: Color(0xFFD9480F),
   );
 
   static const dark = Palette(
@@ -22,12 +24,16 @@ class Palette extends ThemeExtension<Palette> {
     onSuccess: Color(0xFF00391C),
     successContainer: Color(0xFF0F5230),
     onSuccessContainer: Color(0xFFCBF0D6),
+    streak: Color(0xFFFF8F5A),
   );
 
   final Color success;
   final Color onSuccess;
   final Color successContainer;
   final Color onSuccessContainer;
+
+  /// Fire icons for answer and daily streaks.
+  final Color streak;
 
   static Palette of(BuildContext context) =>
       Theme.of(context).extension<Palette>()!;
@@ -38,12 +44,14 @@ class Palette extends ThemeExtension<Palette> {
     Color? onSuccess,
     Color? successContainer,
     Color? onSuccessContainer,
+    Color? streak,
   }) {
     return Palette(
       success: success ?? this.success,
       onSuccess: onSuccess ?? this.onSuccess,
       successContainer: successContainer ?? this.successContainer,
       onSuccessContainer: onSuccessContainer ?? this.onSuccessContainer,
+      streak: streak ?? this.streak,
     );
   }
 
@@ -63,6 +71,7 @@ class Palette extends ThemeExtension<Palette> {
         other.onSuccessContainer,
         t,
       )!,
+      streak: Color.lerp(streak, other.streak, t)!,
     );
   }
 }

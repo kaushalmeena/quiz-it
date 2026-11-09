@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/session.dart';
 import '../../state/clock.dart';
 import '../../state/quiz.dart';
+import '../../theme/radii.dart';
 
 /// Time left for the current question in a timed quiz. Times the question out
 /// when it reaches zero, and freezes once an answer is picked.
@@ -86,7 +87,7 @@ class _CountdownState extends ConsumerState<Countdown>
               const SizedBox(width: 8),
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: Radii.pill,
                   child: LinearProgressIndicator(
                     value: left,
                     minHeight: 6,

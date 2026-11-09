@@ -47,6 +47,7 @@ class ScoreRing extends StatelessWidget {
                       '${(value * 100).round()}%',
                       style: theme.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w700,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     Text(

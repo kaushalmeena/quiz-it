@@ -78,15 +78,14 @@ void main() {
     // No confetti for 50%.
     expect(effects.played, [Effect.correct, Effect.wrong]);
 
-    await tester.tap(find.text('Home'));
+    await tester.tap(find.text('Back to home'));
     await tester.pumpAndSettle();
 
     // Lifetime stats and the category record now show on the home screen.
-    expect(find.text('Quiz'), findsOneWidget);
+    expect(find.text('1 quiz · 50% accuracy · best streak 1'), findsOneWidget);
     final record = find.text('Best 50% · 50% accuracy');
     await tester.scrollUntilVisible(record, 200);
     expect(record, findsOneWidget);
-    expect(find.text('50%'), findsOneWidget);
   });
 
   testWidgets('shows an error when questions fail to load', (tester) async {

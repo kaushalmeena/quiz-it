@@ -5,6 +5,7 @@ import '../../data/catalog.dart';
 import '../../models/category.dart';
 import '../../state/settings.dart';
 import '../../state/stats.dart';
+import '../../theme/radii.dart';
 
 /// A responsive grid of selectable category tiles.
 class CategoryGrid extends StatelessWidget {
@@ -15,7 +16,7 @@ class CategoryGrid extends StatelessWidget {
     return SliverGrid.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
-        mainAxisExtent: 128,
+        mainAxisExtent: 112,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
       ),
@@ -40,10 +41,15 @@ class _CategoryTile extends ConsumerWidget {
     );
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final radius = BorderRadius.circular(20);
-    final mutedColor = selected
-        ? scheme.onPrimaryContainer.withValues(alpha: 0.8)
-        : scheme.onSurfaceVariant;
+    const radius = Radii.large;
+    // Selection is a light tint of the brand colour plus a border and check,
+    // not a saturated fill.
+    final background = selected
+        ? Color.alphaBlend(
+            scheme.primary.withValues(alpha: 0.08),
+            scheme.surfaceContainerLow,
+          )
+        : scheme.surfaceContainerLow;
 
     void handleTap() {
       ref.read(settingsProvider.notifier).selectCategory(category.id);
@@ -55,9 +61,7 @@ class _CategoryTile extends ConsumerWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
-          color: selected
-              ? scheme.primaryContainer
-              : scheme.surfaceContainerLow,
+          color: background,
           borderRadius: radius,
           // Same width in both states so the tile never changes size.
           border: Border.all(
@@ -78,26 +82,20 @@ class _CategoryTile extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? scheme.primary
-                              : scheme.secondaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          category.icon,
-                          size: 22,
-                          color: selected
-                              ? scheme.onPrimary
-                              : scheme.onSecondaryContainer,
-                        ),
+                      Icon(
+                        category.icon,
+                        size: 26,
+                        color: selected
+                            ? scheme.primary
+                            : scheme.onSurfaceVariant,
                       ),
                       const Spacer(),
                       if (selected)
-                        Icon(Icons.check_circle, color: scheme.primary),
+                        Icon(
+                          Icons.check_circle_rounded,
+                          size: 22,
+                          color: scheme.primary,
+                        ),
                     ],
                   ),
                   Column(
@@ -108,9 +106,7 @@ class _CategoryTile extends ConsumerWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleSmall?.copyWith(
-                          color: selected
-                              ? scheme.onPrimaryContainer
-                              : scheme.onSurface,
+                          color: scheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -126,7 +122,10 @@ class _CategoryTile extends ConsumerWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: mutedColor,
+                                  color: scheme.onSurfaceVariant,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
                                 ),
                               ),
                       ),
