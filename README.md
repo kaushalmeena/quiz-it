@@ -4,20 +4,22 @@
 
 # Quiz-It
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.7-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-2.7+-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Async Redux](https://img.shields.io/badge/Async_Redux-13.1.0-764ABC?logo=redux&logoColor=white)](https://pub.dev/packages/async_redux)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-3.13-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Riverpod](https://img.shields.io/badge/Riverpod-3.5-00B4AB?logo=flutter&logoColor=white)](https://pub.dev/packages/flutter_riverpod)
 
-**A Flutter quiz app powered by Redux for state management.**
+**A clean, fast trivia quiz app built with Flutter.**
 
 A cross-platform quiz application built with [Flutter](https://flutter.dev/)
 that pulls trivia questions from the [Open Trivia
-Database](https://opentdb.com/) and keeps every answer, score, and filter in a
-single **Async Redux** store — supporting Android, iOS, and Web.
+Database](https://opentdb.com/) — pick a topic, play a round, and review your
+answers. Runs on Android, iOS, and Web.
 
 </div>
 
 ---
 
 ## Screenshots
+
+> These screenshots are from v1 and will be refreshed for the v2 redesign.
 
 <table>
   <tr>
@@ -30,38 +32,55 @@ single **Async Redux** store — supporting Android, iOS, and Web.
 ## Features
 
 - **Cross-platform** — runs on Android, iOS, and Web from a single codebase.
-- **Redux state management** — predictable, testable state for quiz progress
-  and results, powered by
-  [async_redux](https://pub.dev/packages/async_redux).
-- **Quiz filtering** — pick the category, difficulty, and number of questions
-  before starting a round.
-- **Swipeable question cards** — questions are presented one per page in a
-  swipeable `PageView`.
-- **Instant answer feedback** — answers are marked in the store as you tap
-  them, so the score stays in sync across screens.
+- **Material 3 design** — light and dark themes that follow the system
+  setting, and a centred layout that scales from phones to desktop browsers.
+- **Quiz setup** — choose from 24 categories, a difficulty, multiple choice or
+  true / false questions, and a round of 5–20 questions.
+- **Focused quiz flow** — one question at a time with a progress bar, instant
+  right / wrong feedback, and a running score and streak.
+- **Results and review** — an animated score, round stats, and a review of
+  every question with the correct answer.
+- **Lifetime stats** — quizzes played, accuracy, and best streak, saved on the
+  device along with your last quiz settings.
+- **Friendly errors** — clear, retryable messages when you're offline, the API
+  is rate limited, or a category doesn't have enough questions.
 
 ## How It Works
 
-1. **Pick your filters** — choose a category, difficulty, and question count
-   from the filter sheet.
-2. **Fetch the quiz** — a `FetchQuestions` action calls the Open Trivia
-   Database API and stores the decoded questions in the Redux state.
-3. **Answer and score** — each tap dispatches a `MarkAnswer` action; the store
-   is the single source of truth for progress and results.
+1. **Set up a round** — pick options and a category on the home screen.
+2. **Fetch the quiz** — `QuizNotifier.start()` asks the `TriviaApi` client for
+   questions from the Open Trivia Database.
+3. **Answer and score** — each answer is locked in on the current
+   `QuizSession`; finishing the round records it in your lifetime stats.
 
 > There is no backend of its own — the app talks directly to the public Open
 > Trivia Database API, and nothing is stored off-device.
 
+## Project Structure
+
+```text
+lib/
+├── main.dart           # Opens storage and starts the app
+├── app.dart            # MaterialApp and themes
+├── data/               # Open Trivia DB client and category catalog
+├── models/             # Immutable models: question, session, settings, stats
+├── state/              # Riverpod notifiers and persistent storage
+├── screens/            # home/, quiz/ and results/, each with its own widgets
+├── widgets/            # Widgets shared between screens
+└── theme/              # Material 3 theme and extra semantic colours
+```
+
 ## Tech Stack
 
-| Area           | Tools                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------- |
-| **Framework**  | [Flutter](https://flutter.dev/) · [Dart](https://dart.dev/)                                       |
-| **State**      | [async_redux](https://pub.dev/packages/async_redux)                                               |
-| **Networking** | [http](https://pub.dev/packages/http) · [html_unescape](https://pub.dev/packages/html_unescape)   |
-| **Data**       | [Open Trivia Database](https://opentdb.com/)                                                      |
-| **Testing**    | [flutter_test](https://docs.flutter.dev/testing) · [test](https://pub.dev/packages/test)          |
-| **Tooling**    | [Flutter CLI](https://flutter.dev/docs/get-started/install)                                       |
+| Area           | Tools                                                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**  | [Flutter](https://flutter.dev/) · [Dart](https://dart.dev/)                                                                 |
+| **State**      | [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)                                                               |
+| **Networking** | [http](https://pub.dev/packages/http)                                                                                       |
+| **Storage**    | [shared_preferences](https://pub.dev/packages/shared_preferences)                                                           |
+| **Data**       | [Open Trivia Database](https://opentdb.com/)                                                                                |
+| **Testing**    | [flutter_test](https://docs.flutter.dev/testing)                                                                            |
+| **Tooling**    | [Flutter CLI](https://flutter.dev/docs/get-started/install) · [flutter_lints](https://pub.dev/packages/flutter_lints)       |
 
 ## Getting Started
 
@@ -72,8 +91,8 @@ local machine for development purposes.
 
 To install and run this project you need:
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) with a Dart SDK
-  in the `>=2.7.0 <3.0.0` range
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) 3.47 or newer
+  (Dart 3.13+)
 - [git](https://git-scm.com/downloads) (only to clone this repository)
 - Optional: [Chrome](https://www.google.com/chrome/) (for web debugging)
 - Optional: an IDE with Flutter support —
@@ -115,7 +134,7 @@ flutter run -d chrome
 
 ### Testing
 
-To run the unit tests:
+To run the unit and widget tests (no network needed):
 
 ```bash
 flutter test
