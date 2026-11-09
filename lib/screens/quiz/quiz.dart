@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/session.dart';
@@ -8,7 +9,51 @@ import '../results/results.dart';
 import 'feedback.dart';
 import 'question_view.dart';
 
+/// Keys that pick the first, second, third… answer.
+final _answerKeys = [
+  [
+    LogicalKeyboardKey.digit1,
+    LogicalKeyboardKey.numpad1,
+    LogicalKeyboardKey.keyA,
+  ],
+  [
+    LogicalKeyboardKey.digit2,
+    LogicalKeyboardKey.numpad2,
+    LogicalKeyboardKey.keyB,
+  ],
+  [
+    LogicalKeyboardKey.digit3,
+    LogicalKeyboardKey.numpad3,
+    LogicalKeyboardKey.keyC,
+  ],
+  [
+    LogicalKeyboardKey.digit4,
+    LogicalKeyboardKey.numpad4,
+    LogicalKeyboardKey.keyD,
+  ],
+];
+
+final _advanceKeys = {
+  LogicalKeyboardKey.enter,
+  LogicalKeyboardKey.numpadEnter,
+  LogicalKeyboardKey.arrowRight,
+};
+
+/// Moves to the next question, or to the results after the last one.
+void advanceQuiz(BuildContext context, WidgetRef ref) {
+  final session = ref.read(quizProvider);
+  if (session == null || !session.current.isAnswered) return;
+  if (!session.isLast) {
+    ref.read(quizProvider.notifier).next();
+    return;
+  }
+  ref.read(quizProvider.notifier).finish();
+  Navigator.of(context).pushReplacement(ResultsScreen.route());
+}
+
 /// Plays the current session one question at a time.
+///
+/// On keyboards, 1–4 (or A–D) pick an answer and Enter moves on.
 class QuizScreen extends ConsumerWidget {
   const QuizScreen({super.key});
 
@@ -27,36 +72,58 @@ class QuizScreen extends ConsumerWidget {
       if (leave && context.mounted) Navigator.of(context).pop();
     }
 
+    KeyEventResult handleKey(FocusNode node, KeyEvent event) {
+      if (event is! KeyDownEvent) return KeyEventResult.ignored;
+      final key = event.logicalKey;
+      final question = session.current;
+
+      if (_advanceKeys.contains(key) && question.isAnswered) {
+        advanceQuiz(context, ref);
+        return KeyEventResult.handled;
+      }
+
+      final index = _answerKeys.indexWhere((keys) => keys.contains(key));
+      if (index != -1 && index < question.answers.length) {
+        ref.read(quizProvider.notifier).answer(question.answers[index]);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: handlePop,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: const CloseButton(),
-          title: Text('Question ${session.index + 1} of ${session.total}'),
-          actions: [_ScorePill(session), const SizedBox(width: 16)],
-          bottom: _Progress(session),
-        ),
-        body: SingleChildScrollView(
-          padding: contentInsets(context).copyWith(top: 24, bottom: 24),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            transitionBuilder: _slideFade,
-            child: QuestionView(
-              key: ValueKey(session.index),
-              question: session.current,
+      child: Focus(
+        autofocus: true,
+        onKeyEvent: handleKey,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: const CloseButton(),
+            title: Text('Question ${session.index + 1} of ${session.total}'),
+            actions: [_ScorePill(session), const SizedBox(width: 16)],
+            bottom: _Progress(session),
+          ),
+          body: SingleChildScrollView(
+            padding: contentInsets(context).copyWith(top: 24, bottom: 24),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: _slideFade,
+              child: QuestionView(
+                key: ValueKey(session.index),
+                question: session.current,
+              ),
             ),
           ),
-        ),
-        bottomNavigationBar: BottomActionBar(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AnswerFeedback(session: session),
-              const SizedBox(height: 12),
-              _NextButton(session),
-            ],
+          bottomNavigationBar: BottomActionBar(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AnswerFeedback(session: session),
+                const SizedBox(height: 12),
+                _NextButton(session),
+              ],
+            ),
           ),
         ),
       ),
@@ -109,23 +176,10 @@ class _NextButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final answered = session.current.isAnswered;
-
-    void handleNext() => ref.read(quizProvider.notifier).next();
-
-    void handleFinish() {
-      ref.read(quizProvider.notifier).finish();
-      Navigator.of(context).pushReplacement(ResultsScreen.route());
-    }
-
-    final onPressed = !answered
-        ? null
-        : session.isLast
-        ? handleFinish
-        : handleNext;
+    void handlePressed() => advanceQuiz(context, ref);
 
     return FilledButton.icon(
-      onPressed: onPressed,
+      onPressed: session.current.isAnswered ? handlePressed : null,
       iconAlignment: IconAlignment.end,
       icon: Icon(
         session.isLast ? Icons.flag_rounded : Icons.arrow_forward_rounded,

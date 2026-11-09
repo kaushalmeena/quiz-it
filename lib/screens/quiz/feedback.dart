@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/session.dart';
@@ -15,19 +16,20 @@ class AnswerFeedback extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final question = session.current;
+    final continueHint = _hasKeyboard ? ' · Enter to continue' : '';
 
     final (IconData icon, String text, Color color) = !question.isAnswered
         ? (
             Icons.touch_app_outlined,
-            'Choose an answer',
+            _hasKeyboard ? 'Choose an answer · press 1–4' : 'Choose an answer',
             scheme.onSurfaceVariant,
           )
         : question.isCorrect
         ? (
             Icons.celebration_outlined,
             session.streak >= 2
-                ? 'Correct! ${session.streak} in a row'
-                : 'Correct!',
+                ? 'Correct! ${session.streak} in a row$continueHint'
+                : 'Correct!$continueHint',
             Palette.of(context).success,
           )
         : (
@@ -59,3 +61,10 @@ class AnswerFeedback extends StatelessWidget {
     );
   }
 }
+
+/// Web and desktop usually have a physical keyboard; phones and tablets don't.
+bool get _hasKeyboard =>
+    kIsWeb ||
+    defaultTargetPlatform == TargetPlatform.macOS ||
+    defaultTargetPlatform == TargetPlatform.windows ||
+    defaultTargetPlatform == TargetPlatform.linux;

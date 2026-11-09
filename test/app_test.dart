@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -102,5 +103,45 @@ void main() {
     await tester.tap(find.text('Leave'));
     await tester.pumpAndSettle();
     expect(find.text('Ready for a round?'), findsOneWidget);
+  });
+
+  testWidgets('can be played with the keyboard', (tester) async {
+    await pumpApp(
+      tester,
+      client: mockTrivia(
+        results: [
+          apiQuestion(
+            question: 'Pick true',
+            type: 'boolean',
+            correct: 'True',
+            incorrect: ['False'],
+          ),
+          apiQuestion(question: 'Second?'),
+        ],
+      ),
+    );
+
+    await tester.tap(find.text('Start quiz · 10 questions'));
+    await tester.pumpAndSettle();
+
+    // Enter does nothing until an answer is picked.
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Question 1 of 2'), findsOneWidget);
+
+    // True / False answers are ordered True first, so "1" picks True.
+    await tester.sendKeyEvent(LogicalKeyboardKey.digit1);
+    await tester.pumpAndSettle();
+    expect(find.text('Correct!'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Question 2 of 2'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyB);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Results'), findsOneWidget);
   });
 }
