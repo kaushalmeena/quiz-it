@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 
@@ -18,9 +19,13 @@ class TriviaApi {
     http.Client? client,
     this.timeout = const Duration(seconds: 15),
     this.retryDelay = const Duration(milliseconds: 5100),
+    this.random,
   }) : _client = client ?? http.Client();
 
   final http.Client _client;
+
+  /// Shuffles answer order. Seed it for reproducible output (screenshots).
+  final Random? random;
   final Duration timeout;
 
   /// The API allows one question request per IP every 5 seconds, so a retry
@@ -70,7 +75,7 @@ class TriviaApi {
         case 0:
           return (body['results'] as List)
               .cast<Map<String, dynamic>>()
-              .map(Question.fromApi)
+              .map((json) => Question.fromApi(json, random: random))
               .toList(growable: false);
         case 1:
           throw const TriviaException(TriviaError.notEnoughQuestions);

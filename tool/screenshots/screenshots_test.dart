@@ -9,6 +9,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -208,7 +209,9 @@ Future<Future<void> Function(Duration)> _pumpApp(WidgetTester tester) async {
         storageProvider.overrideWithValue(_storage()),
         clockProvider.overrideWithValue(() => now),
         effectsProvider.overrideWithValue(SilentEffects()),
-        triviaApiProvider.overrideWithValue(TriviaApi(client: _api())),
+        triviaApiProvider.overrideWithValue(
+          TriviaApi(client: _api(), random: Random(7)),
+        ),
       ],
       child: const QuizItApp(),
     ),
