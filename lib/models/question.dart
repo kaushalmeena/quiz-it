@@ -15,6 +15,8 @@ class Question {
     required this.correctAnswer,
     required this.answers,
     this.selectedAnswer,
+    this.timedOut = false,
+    this.points = 0,
   });
 
   /// Parses a result from the Open Trivia Database, requested with
@@ -52,11 +54,26 @@ class Question {
   final List<String> answers;
   final String? selectedAnswer;
 
-  bool get isAnswered => selectedAnswer != null;
+  /// The timer ran out before an answer was picked.
+  final bool timedOut;
+
+  /// Points earned for this question, including any speed bonus.
+  final int points;
+
+  bool get isAnswered => selectedAnswer != null || timedOut;
 
   bool get isCorrect => selectedAnswer == correctAnswer;
 
-  Question answer(String answer) {
+  Question answer(String answer, {int points = 0}) =>
+      _copy(selectedAnswer: answer, points: points);
+
+  Question timeOut() => _copy(timedOut: true);
+
+  Question _copy({
+    String? selectedAnswer,
+    bool timedOut = false,
+    int points = 0,
+  }) {
     return Question(
       text: text,
       category: category,
@@ -64,7 +81,9 @@ class Question {
       type: type,
       correctAnswer: correctAnswer,
       answers: answers,
-      selectedAnswer: answer,
+      selectedAnswer: selectedAnswer,
+      timedOut: timedOut,
+      points: points,
     );
   }
 
@@ -77,7 +96,9 @@ class Question {
         other.type == type &&
         other.correctAnswer == correctAnswer &&
         listEquals(other.answers, answers) &&
-        other.selectedAnswer == selectedAnswer;
+        other.selectedAnswer == selectedAnswer &&
+        other.timedOut == timedOut &&
+        other.points == points;
   }
 
   @override
@@ -89,5 +110,7 @@ class Question {
     correctAnswer,
     Object.hashAll(answers),
     selectedAnswer,
+    timedOut,
+    points,
   );
 }

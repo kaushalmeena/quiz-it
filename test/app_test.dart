@@ -49,7 +49,7 @@ void main() {
 
     await tester.tap(find.text('Yes'));
     await tester.pumpAndSettle();
-    expect(find.text('Correct!'), findsOneWidget);
+    expect(find.text('Correct! +100'), findsOneWidget);
 
     await tester.tap(find.text('Next question'));
     await tester.pumpAndSettle();
@@ -132,7 +132,7 @@ void main() {
     // True / False answers are ordered True first, so "1" picks True.
     await tester.sendKeyEvent(LogicalKeyboardKey.digit1);
     await tester.pumpAndSettle();
-    expect(find.text('Correct!'), findsOneWidget);
+    expect(find.text('Correct! +100'), findsOneWidget);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
@@ -143,5 +143,24 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(find.text('Results'), findsOneWidget);
+  });
+
+  testWidgets('times out questions in timed mode', (tester) async {
+    await pumpApp(tester);
+
+    await tester.tap(find.text('Timed mode'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Start quiz · 10 questions'));
+    // The countdown keeps animating, so pump frames instead of settling.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text('20s'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 21));
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text("Time's up! Answer: 4"), findsOneWidget);
+    expect(find.text('0s'), findsOneWidget);
   });
 }

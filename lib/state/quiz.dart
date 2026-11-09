@@ -7,6 +7,9 @@ import 'stats.dart';
 
 final triviaApiProvider = Provider<TriviaApi>((ref) => TriviaApi());
 
+/// The current time. Overridden in tests to control timers and points.
+final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
 final quizProvider = NotifierProvider<QuizNotifier, QuizSession?>(
   QuizNotifier.new,
 );
@@ -26,7 +29,11 @@ class QuizNotifier extends Notifier<QuizSession?> {
         .read(triviaApiProvider)
         .fetchQuestions(settings);
     if (!ref.mounted) return;
-    state = QuizSession(questions: questions, startedAt: DateTime.now());
+    state = QuizSession(
+      questions: questions,
+      settings: settings,
+      startedAt: _now(),
+    );
   }
 
   /// Locks in an answer for the current question. Answers can't be changed.
@@ -35,7 +42,19 @@ class QuizNotifier extends Notifier<QuizSession?> {
     if (session == null || session.isFinished || session.current.isAnswered) {
       return;
     }
-    state = session.answerCurrent(answer);
+    state = session.answerCurrent(answer, at: _now());
+  }
+
+  /// Marks the current question as unanswered in time (timed quizzes only).
+  void timeOut() {
+    final session = state;
+    if (session == null ||
+        !session.isTimed ||
+        session.isFinished ||
+        session.current.isAnswered) {
+      return;
+    }
+    state = session.timeOutCurrent();
   }
 
   void next() {
@@ -43,7 +62,7 @@ class QuizNotifier extends Notifier<QuizSession?> {
     if (session == null || session.isLast || !session.current.isAnswered) {
       return;
     }
-    state = session.next();
+    state = session.next(at: _now());
   }
 
   /// Ends the quiz and adds it to the lifetime stats.
@@ -51,8 +70,10 @@ class QuizNotifier extends Notifier<QuizSession?> {
     final session = state;
     if (session == null || session.isFinished) return;
 
-    final finished = session.finish(DateTime.now());
+    final finished = session.finish(_now());
     state = finished;
     ref.read(statsProvider.notifier).record(finished);
   }
+
+  DateTime _now() => ref.read(clockProvider)();
 }

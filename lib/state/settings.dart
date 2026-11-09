@@ -35,6 +35,8 @@ class SettingsNotifier extends Notifier<QuizSettings> {
 
   void selectAmount(int amount) => _save(state.withAmount(amount));
 
+  void setTimed(bool timed) => _save(state.withTimed(timed));
+
   void _save(QuizSettings settings) {
     state = settings;
     ref.read(storageProvider).write(storageKey, json.encode(settings.toJson()));

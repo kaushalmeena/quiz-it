@@ -27,14 +27,18 @@ class AnswerFeedback extends StatelessWidget {
         : question.isCorrect
         ? (
             Icons.celebration_outlined,
-            session.streak >= 2
-                ? 'Correct! ${session.streak} in a row$continueHint'
-                : 'Correct!$continueHint',
+            [
+                  'Correct! +${question.points}',
+                  if (session.streak >= 2) '${session.streak} in a row',
+                ].join(' · ') +
+                continueHint,
             Palette.of(context).success,
           )
         : (
-            Icons.info_outline_rounded,
-            'Answer: ${question.correctAnswer}',
+            question.timedOut
+                ? Icons.timer_off_outlined
+                : Icons.info_outline_rounded,
+            "${question.timedOut ? "Time's up! " : ''}Answer: ${question.correctAnswer}",
             scheme.error,
           );
 

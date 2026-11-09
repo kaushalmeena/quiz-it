@@ -59,7 +59,10 @@ class _ReviewCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  question.difficulty.label,
+                  [
+                    if (question.points > 0) '+${question.points}',
+                    question.difficulty.label,
+                  ].join(' · '),
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -71,7 +74,9 @@ class _ReviewCard extends StatelessWidget {
             const SizedBox(height: 12),
             _AnswerLine(
               label: 'Your answer',
-              value: question.selectedAnswer ?? 'Skipped',
+              value: question.timedOut
+                  ? "Time's up"
+                  : question.selectedAnswer ?? 'Skipped',
               color: correct ? palette.success : scheme.error,
             ),
             if (!correct) ...[

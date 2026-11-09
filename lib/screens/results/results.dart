@@ -55,7 +55,7 @@ class ResultsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            verdict.subtitle,
+            '${verdict.subtitle}\nFinished in ${_formatDuration(session.elapsed)}.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -71,15 +71,15 @@ class ResultsScreen extends ConsumerWidget {
                 label: 'Correct',
               ),
               StatTile(
+                icon: Icons.star_outline_rounded,
+                value: '${session.points}',
+                label: session.isTimed ? 'Points (timed)' : 'Points',
+              ),
+              StatTile(
                 icon: Icons.local_fire_department_outlined,
                 color: Colors.deepOrange,
                 value: '${session.bestStreak}',
                 label: 'Best streak',
-              ),
-              StatTile(
-                icon: Icons.timer_outlined,
-                value: _formatDuration(session.elapsed),
-                label: 'Time',
               ),
             ],
           ),

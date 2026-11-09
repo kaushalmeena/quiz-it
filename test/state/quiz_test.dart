@@ -11,9 +11,14 @@ import 'package:quiz_it/state/storage.dart';
 
 import '../fixtures.dart';
 
-ProviderContainer createContainer({http.Client? client, Storage? storage}) {
+ProviderContainer createContainer({
+  http.Client? client,
+  Storage? storage,
+  DateTime Function()? clock,
+}) {
   return ProviderContainer.test(
     overrides: [
+      if (clock != null) clockProvider.overrideWithValue(clock),
       storageProvider.overrideWithValue(storage ?? MemoryStorage()),
       triviaApiProvider.overrideWithValue(
         TriviaApi(client: client ?? mockTrivia(), retryDelay: Duration.zero),
@@ -124,5 +129,36 @@ void main() {
 
     final relaunched = createContainer(storage: storage);
     expect(relaunched.read(statsProvider), stats);
+  });
+
+  test('timed quizzes award speed bonuses and time out', () async {
+    var now = DateTime(2026, 1, 1);
+    final container = createContainer(clock: () => now);
+    container.read(settingsProvider.notifier).setTimed(true);
+    final quiz = container.read(quizProvider.notifier);
+    await quiz.start();
+
+    now = now.add(const Duration(seconds: 5));
+    quiz.answer('4');
+    expect(container.read(quizProvider)!.points, 175);
+
+    quiz.next();
+    quiz.timeOut();
+    final session = container.read(quizProvider)!;
+    expect(session.current.timedOut, isTrue);
+    expect(session.current.isAnswered, isTrue);
+
+    // A late answer after the timeout is ignored.
+    quiz.answer('4');
+    expect(container.read(quizProvider)!.points, 175);
+  });
+
+  test('timeOut() does nothing in untimed quizzes', () async {
+    final container = createContainer();
+    final quiz = container.read(quizProvider.notifier);
+    await quiz.start();
+
+    quiz.timeOut();
+    expect(container.read(quizProvider)!.current.isAnswered, isFalse);
   });
 }

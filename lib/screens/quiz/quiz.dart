@@ -6,6 +6,7 @@ import '../../models/session.dart';
 import '../../state/quiz.dart';
 import '../../widgets/layout.dart';
 import '../results/results.dart';
+import 'countdown.dart';
 import 'feedback.dart';
 import 'question_view.dart';
 
@@ -107,19 +108,32 @@ class QuizScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 24),
             // Clip to the full screen width so questions slide in from the
             // screen edge rather than from the content column's edge.
-            child: ClipRect(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 320),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                layoutBuilder: _stackTop,
-                transitionBuilder: _slideFor(session.index),
-                child: Padding(
-                  key: ValueKey(session.index),
-                  padding: contentInsets(context),
-                  child: QuestionView(question: session.current),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (session.isTimed)
+                  Padding(
+                    padding: contentInsets(context).copyWith(bottom: 20),
+                    child: Countdown(
+                      key: ValueKey(session.index),
+                      session: session,
+                    ),
+                  ),
+                ClipRect(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 320),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    layoutBuilder: _stackTop,
+                    transitionBuilder: _slideFor(session.index),
+                    child: Padding(
+                      key: ValueKey(session.index),
+                      padding: contentInsets(context),
+                      child: QuestionView(question: session.current),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
           bottomNavigationBar: BottomActionBar(
@@ -219,7 +233,7 @@ class _ScorePill extends StatelessWidget {
     final streak = session.streak;
 
     return Semantics(
-      label: '${session.correctCount} correct',
+      label: '${session.points} points',
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -229,19 +243,33 @@ class _ScorePill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              streak >= 2
-                  ? Icons.local_fire_department_rounded
-                  : Icons.check_circle_rounded,
-              size: 18,
-              color: streak >= 2 ? Colors.deepOrange : scheme.primary,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              '${session.correctCount}',
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: scheme.onSecondaryContainer,
-                fontWeight: FontWeight.w700,
+            if (streak >= 2) ...[
+              const Icon(
+                Icons.local_fire_department_rounded,
+                size: 18,
+                color: Colors.deepOrange,
+              ),
+              Text(
+                '$streak',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: scheme.onSecondaryContainer,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Icon(Icons.star_rounded, size: 18, color: scheme.primary),
+            const SizedBox(width: 4),
+            TweenAnimationBuilder<int>(
+              tween: IntTween(end: session.points),
+              duration: const Duration(milliseconds: 500),
+              builder: (context, value, _) => Text(
+                '$value',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: scheme.onSecondaryContainer,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
             ),
           ],

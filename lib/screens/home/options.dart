@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/difficulty.dart';
 import '../../models/question_type.dart';
+import '../../models/session.dart';
 import '../../models/settings.dart';
 import '../../state/settings.dart';
 
@@ -23,6 +24,8 @@ class QuizOptions extends StatelessWidget {
             _Option(label: 'Question type', picker: _TypePicker()),
             SizedBox(height: 20),
             _Option(label: 'Number of questions', picker: _AmountPicker()),
+            SizedBox(height: 12),
+            _TimedSwitch(),
           ],
         ),
       ),
@@ -123,6 +126,31 @@ class _AmountPicker extends ConsumerWidget {
         for (final amount in QuizSettings.amounts)
           ButtonSegment(value: amount, label: Text('$amount')),
       ],
+    );
+  }
+}
+
+class _TimedSwitch extends ConsumerWidget {
+  const _TimedSwitch();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final timed = ref.watch(settingsProvider.select((s) => s.timed));
+    final seconds = QuizSession.timeLimit.inSeconds;
+
+    void handleChanged(bool value) {
+      ref.read(settingsProvider.notifier).setTimed(value);
+    }
+
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      secondary: const Icon(Icons.timer_outlined),
+      title: const Text('Timed mode'),
+      subtitle: Text(
+        '$seconds s per question · faster answers earn bonus points',
+      ),
+      value: timed,
+      onChanged: handleChanged,
     );
   }
 }
