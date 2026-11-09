@@ -13,6 +13,7 @@ class QuizSession {
     required this.startedAt,
     this.settings = const QuizSettings(),
     this.index = 0,
+    this.dailyDay,
     DateTime? questionStartedAt,
     this.finishedAt,
   }) : questionStartedAt = questionStartedAt ?? startedAt;
@@ -33,6 +34,11 @@ class QuizSession {
   final QuizSettings settings;
 
   final int index;
+
+  /// The day of the daily challenge this round is, as a `dayKey`; `null`
+  /// for a regular quiz.
+  final String? dailyDay;
+
   final DateTime startedAt;
 
   /// When the current question was first shown.
@@ -49,6 +55,8 @@ class QuizSession {
   bool get isFinished => finishedAt != null;
 
   bool get isTimed => settings.timed;
+
+  bool get isDaily => dailyDay != null;
 
   int get answeredCount => questions.where((q) => q.isAnswered).length;
 
@@ -120,6 +128,7 @@ class QuizSession {
       questions: questions ?? this.questions,
       settings: settings,
       index: index ?? this.index,
+      dailyDay: dailyDay,
       startedAt: startedAt,
       questionStartedAt: questionStartedAt ?? this.questionStartedAt,
       finishedAt: finishedAt ?? this.finishedAt,
@@ -132,6 +141,7 @@ class QuizSession {
         listEquals(other.questions, questions) &&
         other.settings == settings &&
         other.index == index &&
+        other.dailyDay == dailyDay &&
         other.startedAt == startedAt &&
         other.questionStartedAt == questionStartedAt &&
         other.finishedAt == finishedAt;
@@ -142,6 +152,7 @@ class QuizSession {
     Object.hashAll(questions),
     settings,
     index,
+    dailyDay,
     startedAt,
     questionStartedAt,
     finishedAt,

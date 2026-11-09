@@ -6,11 +6,16 @@ import 'package:http/http.dart' as http;
 import 'package:quiz_it/app.dart';
 import 'package:quiz_it/data/api.dart';
 import 'package:quiz_it/state/quiz.dart';
+import 'package:quiz_it/state/settings.dart';
 import 'package:quiz_it/state/storage.dart';
 
 import 'fixtures.dart';
 
-Future<void> pumpApp(WidgetTester tester, {http.Client? client}) async {
+Future<void> pumpApp(
+  WidgetTester tester, {
+  http.Client? client,
+  Storage? storage,
+}) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.75;
   addTearDown(tester.view.reset);
@@ -18,7 +23,7 @@ Future<void> pumpApp(WidgetTester tester, {http.Client? client}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        storageProvider.overrideWithValue(MemoryStorage()),
+        storageProvider.overrideWithValue(storage ?? MemoryStorage()),
         triviaApiProvider.overrideWithValue(
           TriviaApi(client: client ?? mockTrivia()),
         ),
@@ -149,10 +154,10 @@ void main() {
   });
 
   testWidgets('times out questions in timed mode', (tester) async {
-    await pumpApp(tester);
-
-    await tester.tap(find.text('Timed mode'));
-    await tester.pumpAndSettle();
+    await pumpApp(
+      tester,
+      storage: MemoryStorage({SettingsNotifier.storageKey: '{"timed": true}'}),
+    );
     await tester.tap(find.text('Start quiz · 10 questions'));
     // The countdown keeps animating, so pump frames instead of settling.
     await tester.pump();

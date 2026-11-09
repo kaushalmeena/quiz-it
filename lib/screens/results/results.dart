@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../state/clock.dart';
+import '../../state/daily.dart';
 import '../../state/quiz.dart';
 import '../../theme/palette.dart';
 import '../../widgets/layout.dart';
@@ -29,13 +31,16 @@ class ResultsScreen extends ConsumerWidget {
 
     final theme = Theme.of(context);
     final verdict = _Verdict.of(session.score);
+    final dailyStreak = session.isDaily
+        ? ref.watch(dailyProvider).streakOn(ref.watch(clockProvider)())
+        : 0;
 
     void goHome() => Navigator.of(context).pop();
 
     return Scaffold(
       appBar: AppBar(
         leading: const CloseButton(),
-        title: const Text('Results'),
+        title: Text(session.isDaily ? 'Daily challenge' : 'Results'),
       ),
       body: ListView(
         padding: contentInsets(context).copyWith(top: 16, bottom: 24),
@@ -55,7 +60,14 @@ class ResultsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${verdict.subtitle}\nFinished in ${_formatDuration(session.elapsed)}.',
+            [
+              verdict.subtitle,
+              'Finished in ${_formatDuration(session.elapsed)}.',
+              if (session.isDaily)
+                dailyStreak == 1
+                    ? 'Daily streak started. See you tomorrow!'
+                    : 'Daily streak: $dailyStreak days. See you tomorrow!',
+            ].join('\n'),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -88,25 +100,27 @@ class ResultsScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: BottomActionBar(
-        child: Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: goHome,
-                child: const Text('Home'),
+        child: session.isDaily
+            ? FilledButton(onPressed: goHome, child: const Text('Done'))
+            : Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: goHome,
+                      child: const Text('Home'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: StartQuizButton(
+                      label: 'Play again',
+                      icon: Icons.replay_rounded,
+                      onStarted: _playAgain,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 2,
-              child: StartQuizButton(
-                label: 'Play again',
-                icon: Icons.replay_rounded,
-                onStarted: _playAgain,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'state/daily.dart';
 import 'state/settings.dart';
 import 'state/stats.dart';
 import 'state/storage.dart';
@@ -12,6 +13,7 @@ Future<void> main() async {
   final storage = await PrefsStorage.open({
     SettingsNotifier.storageKey,
     StatsNotifier.storageKey,
+    DailyNotifier.storageKey,
   });
 
   runApp(

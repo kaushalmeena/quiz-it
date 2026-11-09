@@ -12,10 +12,14 @@ class StartQuizButton extends ConsumerStatefulWidget {
     required this.label,
     required this.onStarted,
     this.icon = Icons.play_arrow_rounded,
+    this.daily = false,
   });
 
   final String label;
   final IconData icon;
+
+  /// Starts today's daily challenge instead of a quiz with the user's settings.
+  final bool daily;
   final void Function(BuildContext context) onStarted;
 
   @override
@@ -31,7 +35,8 @@ class _StartQuizButtonState extends ConsumerState<StartQuizButton> {
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
 
     try {
-      await ref.read(quizProvider.notifier).start();
+      final quiz = ref.read(quizProvider.notifier);
+      await (widget.daily ? quiz.startDaily() : quiz.start());
       if (mounted) widget.onStarted(context);
     } on TriviaException catch (error) {
       messenger.showSnackBar(

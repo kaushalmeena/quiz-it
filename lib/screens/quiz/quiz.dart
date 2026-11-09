@@ -100,7 +100,10 @@ class QuizScreen extends ConsumerWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: const CloseButton(),
-            title: Text('Question ${session.index + 1} of ${session.total}'),
+            title: Text(
+              '${session.isDaily ? 'Daily · ' : ''}'
+              'Question ${session.index + 1} of ${session.total}',
+            ),
             actions: [_ScorePill(session), const SizedBox(width: 16)],
             bottom: _Progress(session),
           ),

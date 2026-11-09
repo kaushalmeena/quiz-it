@@ -54,10 +54,13 @@ class Stats {
       questionsAnswered: questionsAnswered + session.answeredCount,
       correctAnswers: correctAnswers + session.correctCount,
       bestStreak: max(bestStreak, session.bestStreak),
-      categories: Map.unmodifiable({
-        ...categories,
-        key: (categories[key] ?? const CategoryRecord()).record(session),
-      }),
+      // Daily challenges mix every category, so they don't count towards one.
+      categories: session.isDaily
+          ? categories
+          : Map.unmodifiable({
+              ...categories,
+              key: (categories[key] ?? const CategoryRecord()).record(session),
+            }),
     );
   }
 

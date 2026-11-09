@@ -2,8 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_it/data/api.dart';
+import 'package:quiz_it/data/daily_bank.dart';
 import 'package:quiz_it/models/difficulty.dart';
 import 'package:quiz_it/models/question_type.dart';
+import 'package:quiz_it/state/clock.dart';
+import 'package:quiz_it/state/daily.dart';
 import 'package:quiz_it/state/quiz.dart';
 import 'package:quiz_it/state/settings.dart';
 import 'package:quiz_it/state/stats.dart';
@@ -19,6 +22,11 @@ ProviderContainer createContainer({
   return ProviderContainer.test(
     overrides: [
       if (clock != null) clockProvider.overrideWithValue(clock),
+      dailyBankProvider.overrideWith(
+        (ref) => DailyBank([
+          for (var i = 0; i < 40; i++) apiQuestion(question: 'Daily $i'),
+        ]),
+      ),
       storageProvider.overrideWithValue(storage ?? MemoryStorage()),
       triviaApiProvider.overrideWithValue(
         TriviaApi(client: client ?? mockTrivia(), retryDelay: Duration.zero),
@@ -192,5 +200,42 @@ void main() {
 
     final relaunched = createContainer(storage: storage);
     expect(relaunched.read(statsProvider), stats);
+  });
+
+  test('the daily challenge is timed and updates the daily streak', () async {
+    var now = DateTime(2026, 11, 9, 9);
+    final storage = MemoryStorage();
+    final container = createContainer(clock: () => now, storage: storage);
+    final quiz = container.read(quizProvider.notifier);
+
+    Future<void> playDaily() async {
+      await quiz.startDaily();
+      final session = container.read(quizProvider)!;
+      expect(session.isDaily, isTrue);
+      expect(session.isTimed, isTrue);
+      expect(session.total, DailyBank.questionsPerDay);
+      for (var i = 0; i < session.total; i++) {
+        quiz
+          ..answer('4')
+          ..next();
+      }
+      quiz.finish();
+    }
+
+    await playDaily();
+    expect(container.read(dailyProvider).streak, 1);
+    expect(container.read(dailyProvider).lastCorrect, 10);
+
+    now = DateTime(2026, 11, 10, 20);
+    await playDaily();
+    expect(container.read(dailyProvider).streak, 2);
+
+    // Daily rounds count in the lifetime totals but not in any category.
+    final stats = container.read(statsProvider);
+    expect(stats.quizzesPlayed, 2);
+    expect(stats.categories, isEmpty);
+
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(dailyProvider), container.read(dailyProvider));
   });
 }

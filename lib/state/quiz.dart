@@ -1,14 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/api.dart';
+import '../models/daily.dart';
 import '../models/session.dart';
+import '../models/settings.dart';
+import 'clock.dart';
+import 'daily.dart';
 import 'settings.dart';
 import 'stats.dart';
 
 final triviaApiProvider = Provider<TriviaApi>((ref) => TriviaApi());
-
-/// The current time. Overridden in tests to control timers and points.
-final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
 
 final quizProvider = NotifierProvider<QuizNotifier, QuizSession?>(
   QuizNotifier.new,
@@ -33,6 +34,19 @@ class QuizNotifier extends Notifier<QuizSession?> {
       questions: questions,
       settings: settings,
       startedAt: _now(),
+    );
+  }
+
+  /// Starts today's daily challenge: the same timed questions for everyone.
+  Future<void> startDaily() async {
+    final bank = await ref.read(dailyBankProvider.future);
+    if (!ref.mounted) return;
+    final now = _now();
+    state = QuizSession(
+      questions: bank.questionsFor(now),
+      settings: const QuizSettings(timed: true),
+      dailyDay: dayKey(now),
+      startedAt: now,
     );
   }
 
@@ -73,6 +87,7 @@ class QuizNotifier extends Notifier<QuizSession?> {
     final finished = session.finish(_now());
     state = finished;
     ref.read(statsProvider.notifier).record(finished);
+    if (finished.isDaily) ref.read(dailyProvider.notifier).complete(finished);
   }
 
   DateTime _now() => ref.read(clockProvider)();

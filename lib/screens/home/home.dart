@@ -6,6 +6,7 @@ import '../../widgets/layout.dart';
 import '../../widgets/start_button.dart';
 import '../quiz/quiz.dart';
 import 'category_grid.dart';
+import 'daily_card.dart';
 import 'options.dart';
 import 'stats_summary.dart';
 
@@ -42,6 +43,8 @@ class HomeScreen extends ConsumerWidget {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
+                const SizedBox(height: 20),
+                const DailyCard(),
                 const StatsSummary(),
                 const SectionTitle('Options'),
                 const QuizOptions(),
