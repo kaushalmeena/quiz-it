@@ -4,14 +4,14 @@
 
 # Quiz-It
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.7-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-2.7+-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Async Redux](https://img.shields.io/badge/Async_Redux-13.1.0-764ABC?logo=redux&logoColor=white)](https://pub.dev/packages/async_redux)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](LICENSE) [![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white)](https://flutter.dev/) [![Dart](https://img.shields.io/badge/Dart-3.13-0175C2?logo=dart&logoColor=white)](https://dart.dev/) [![Riverpod](https://img.shields.io/badge/Riverpod-3.5-00B4AB?logo=flutter&logoColor=white)](https://pub.dev/packages/flutter_riverpod)
 
-**A Flutter quiz app powered by Redux for state management.**
+**A clean, fast trivia quiz app built with Flutter.**
 
 A cross-platform quiz application built with [Flutter](https://flutter.dev/)
 that pulls trivia questions from the [Open Trivia
-Database](https://opentdb.com/) and keeps every answer, score, and filter in a
-single **Async Redux** store — supporting Android, iOS, and Web.
+Database](https://opentdb.com/) — pick a topic, play a round, and review your
+answers. Runs on Android, iOS, and Web.
 
 </div>
 
@@ -21,47 +21,87 @@ single **Async Redux** store — supporting Android, iOS, and Web.
 
 <table>
   <tr>
-    <td width="33%"><img src="screenshots/HomeScreen.png" alt="Home screen listing quiz questions"></td>
-    <td width="33%"><img src="screenshots/FilterBottomSheet.png" alt="Filter bottom sheet with category, difficulty, and amount"></td>
-    <td width="33%"><img src="screenshots/QuestionCard.png" alt="Question card with multiple choice answers"></td>
+    <td width="33%"><img src="screenshots/home.png" alt="Home screen with the daily challenge, lifetime stats and quiz options"></td>
+    <td width="33%"><img src="screenshots/quiz.png" alt="Timed question answered correctly, with points and a 4-answer streak"></td>
+    <td width="33%"><img src="screenshots/results.png" alt="Results with a 90% score ring, points, best streak and answer review"></td>
   </tr>
 </table>
 
 ## Features
 
 - **Cross-platform** — runs on Android, iOS, and Web from a single codebase.
-- **Redux state management** — predictable, testable state for quiz progress
-  and results, powered by
-  [async_redux](https://pub.dev/packages/async_redux).
-- **Quiz filtering** — pick the category, difficulty, and number of questions
-  before starting a round.
-- **Swipeable question cards** — questions are presented one per page in a
-  swipeable `PageView`.
-- **Instant answer feedback** — answers are marked in the store as you tap
-  them, so the score stays in sync across screens.
+- **Material 3 design** — light and dark themes that follow the system
+  setting, and a centred layout that scales from phones to desktop browsers.
+- **Quiz setup** — choose from 24 categories, a difficulty, multiple choice or
+  true / false questions, and a round of 5–20 questions.
+- **Daily challenge** — 10 timed questions a day, the same for every player,
+  with a daily streak. Works offline from a bundled question bank.
+- **Timed mode** — an optional 20-second countdown per question; faster
+  answers earn up to double points.
+- **Focused quiz flow** — one question at a time with a progress bar, instant
+  right / wrong feedback, a running score and streak, and questions that
+  slide in from the right.
+- **Keyboard shortcuts** — 1–4 (or A–D) to answer and Enter to continue, on
+  web and desktop.
+- **Sound, vibration, and confetti** — feedback on every answer (with a mute
+  toggle) and a confetti burst for scores of 80% or more.
+- **Results and review** — an animated score, points, round stats, and a
+  review of every question with the correct answer.
+- **Stats that stick** — quizzes played, accuracy, and best streak overall,
+  plus your best score and accuracy on every category tile. Saved on the
+  device along with your settings.
+- **No repeats** — an Open Trivia DB session token stops questions repeating
+  while the app is open.
+- **Friendly errors** — clear, retryable messages when you're offline, the API
+  is rate limited, or a category doesn't have enough questions.
 
 ## How It Works
 
-1. **Pick your filters** — choose a category, difficulty, and question count
-   from the filter sheet.
-2. **Fetch the quiz** — a `FetchQuestions` action calls the Open Trivia
-   Database API and stores the decoded questions in the Redux state.
-3. **Answer and score** — each tap dispatches a `MarkAnswer` action; the store
-   is the single source of truth for progress and results.
+1. **Set up a round** — pick options and a category on the home screen.
+2. **Fetch the quiz** — `QuizNotifier.start()` asks the `TriviaApi` client for
+   questions from the Open Trivia Database.
+3. **Answer and score** — each answer is locked in on the current
+   `QuizSession`; finishing the round records it in your lifetime stats.
 
 > There is no backend of its own — the app talks directly to the public Open
 > Trivia Database API, and nothing is stored off-device.
 
+## Project Structure
+
+```text
+lib/
+├── main.dart           # Opens storage and starts the app
+├── app.dart            # MaterialApp and themes
+├── data/               # Open Trivia DB client, category catalog, daily bank
+├── models/             # Immutable models: question, session, settings, stats
+├── state/              # Riverpod notifiers, storage, sound and haptics
+├── screens/            # home/, quiz/ and results/, each with its own widgets
+├── widgets/            # Widgets shared between screens
+└── theme/              # Material 3 theme and extra semantic colours
+
+assets/
+├── logo.svg            # Master logo; every app icon is rendered from it
+├── daily/              # Bundled question bank for the daily challenge
+└── sounds/             # Sound effects
+
+tool/
+├── build_daily_bank.dart  # Re-downloads the daily question bank
+├── logo.py                # Renders all app icons from the logo design
+└── screenshots/           # Renders the README screenshots
+```
+
 ## Tech Stack
 
-| Area           | Tools                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------- |
-| **Framework**  | [Flutter](https://flutter.dev/) · [Dart](https://dart.dev/)                                       |
-| **State**      | [async_redux](https://pub.dev/packages/async_redux)                                               |
-| **Networking** | [http](https://pub.dev/packages/http) · [html_unescape](https://pub.dev/packages/html_unescape)   |
-| **Data**       | [Open Trivia Database](https://opentdb.com/)                                                      |
-| **Testing**    | [flutter_test](https://docs.flutter.dev/testing) · [test](https://pub.dev/packages/test)          |
-| **Tooling**    | [Flutter CLI](https://flutter.dev/docs/get-started/install)                                       |
+| Area           | Tools                                                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**  | [Flutter](https://flutter.dev/) · [Dart](https://dart.dev/)                                                                 |
+| **State**      | [flutter_riverpod](https://pub.dev/packages/flutter_riverpod)                                                               |
+| **Networking** | [http](https://pub.dev/packages/http)                                                                                       |
+| **Storage**    | [shared_preferences](https://pub.dev/packages/shared_preferences)                                                           |
+| **Audio**      | [audioplayers](https://pub.dev/packages/audioplayers)                                                                       |
+| **Data**       | [Open Trivia Database](https://opentdb.com/)                                                                                |
+| **Testing**    | [flutter_test](https://docs.flutter.dev/testing)                                                                            |
+| **Tooling**    | [Flutter CLI](https://flutter.dev/docs/get-started/install) · [flutter_lints](https://pub.dev/packages/flutter_lints)       |
 
 ## Getting Started
 
@@ -72,8 +112,8 @@ local machine for development purposes.
 
 To install and run this project you need:
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) with a Dart SDK
-  in the `>=2.7.0 <3.0.0` range
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) 3.47 or newer
+  (Dart 3.13+)
 - [git](https://git-scm.com/downloads) (only to clone this repository)
 - Optional: [Chrome](https://www.google.com/chrome/) (for web debugging)
 - Optional: an IDE with Flutter support —
@@ -115,7 +155,7 @@ flutter run -d chrome
 
 ### Testing
 
-To run the unit tests:
+To run the unit and widget tests (no network needed):
 
 ```bash
 flutter test
@@ -140,11 +180,37 @@ flutter build web      # Web
 The build output is written to the `build/` folder — `build/app/outputs` for
 Android and `build/web` for the web bundle.
 
+### Regenerating assets
+
+To rebuild the daily challenge question bank (takes about two minutes because
+of the API's rate limit):
+
+```bash
+dart run tool/build_daily_bank.dart
+```
+
+To re-render the logo and every app icon after editing the design in
+`tool/logo.py` (needs `rsvg-convert` from `brew install librsvg`; the iOS step
+uses macOS `sips`):
+
+```bash
+python3 tool/logo.py
+```
+
+To re-render the README screenshots after a UI change (uses the fonts that
+ship with Flutter, a fixed date and sample data, so the output is stable):
+
+```bash
+flutter test tool/screenshots --update-goldens
+```
+
 ## Credits
 
 - Trivia questions provided by the [Open Trivia
   Database](https://opentdb.com/), licensed under
-  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The
+  bundled daily question bank (`assets/daily/questions.json`) is an unmodified
+  selection of those questions under the same licence.
 
 ## Contributing
 

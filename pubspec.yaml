@@ -1,27 +1,29 @@
 name: quiz_it
-description: A simple flutter quiz app which uses Redux for quiz state management.
+description: A Flutter trivia quiz app powered by Async Redux.
 
 publish_to: "none"
 
-version: 1.0.0
+version: 2.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ^3.13.0
 
 dependencies:
+  audioplayers: ^6.8.1
   flutter:
     sdk: flutter
-  async_redux: ^13.1.0
-  cupertino_icons: ^1.0.4
-  html_unescape: ^2.0.0
-  http: ^0.13.4
+  flutter_riverpod: ^3.5.0
+  http: ^1.6.0
+  shared_preferences: ^2.5.6
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  test: ^1.19.3
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/daily/
+    - assets/sounds/

@@ -1,0 +1,241 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:quiz_it/data/api.dart';
+import 'package:quiz_it/data/daily_bank.dart';
+import 'package:quiz_it/models/difficulty.dart';
+import 'package:quiz_it/models/question_type.dart';
+import 'package:quiz_it/state/clock.dart';
+import 'package:quiz_it/state/daily.dart';
+import 'package:quiz_it/state/quiz.dart';
+import 'package:quiz_it/state/settings.dart';
+import 'package:quiz_it/state/stats.dart';
+import 'package:quiz_it/state/storage.dart';
+
+import '../fixtures.dart';
+
+ProviderContainer createContainer({
+  http.Client? client,
+  Storage? storage,
+  DateTime Function()? clock,
+}) {
+  return ProviderContainer.test(
+    overrides: [
+      if (clock != null) clockProvider.overrideWithValue(clock),
+      dailyBankProvider.overrideWith(
+        (ref) => DailyBank([
+          for (var i = 0; i < 40; i++) apiQuestion(question: 'Daily $i'),
+        ]),
+      ),
+      storageProvider.overrideWithValue(storage ?? MemoryStorage()),
+      triviaApiProvider.overrideWithValue(
+        TriviaApi(client: client ?? mockTrivia(), retryDelay: Duration.zero),
+      ),
+    ],
+  );
+}
+
+void main() {
+  test('settings changes are applied and persisted', () {
+    final storage = MemoryStorage();
+    final container = createContainer(storage: storage);
+    final settings = container.read(settingsProvider.notifier);
+
+    settings
+      ..selectCategory(18)
+      ..selectDifficulty(Difficulty.hard)
+      ..selectType(QuestionType.boolean)
+      ..selectAmount(20);
+
+    final state = container.read(settingsProvider);
+    expect(state.categoryId, 18);
+    expect(state.difficulty, Difficulty.hard);
+    expect(state.type, QuestionType.boolean);
+    expect(state.amount, 20);
+
+    // A new app launch reads the same settings back.
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(settingsProvider), state);
+  });
+
+  test('ignores corrupt stored data', () {
+    final container = createContainer(
+      storage: MemoryStorage({SettingsNotifier.storageKey: '{oops'}),
+    );
+
+    expect(container.read(settingsProvider).amount, 10);
+  });
+
+  test('start() fetches questions using the current settings', () async {
+    final requests = <Uri>[];
+    final container = createContainer(client: mockTrivia(requests: requests));
+    container.read(settingsProvider.notifier).selectAmount(5);
+
+    await container.read(quizProvider.notifier).start();
+
+    expect(questionRequests(requests).single.queryParameters['amount'], '5');
+    expect(container.read(quizProvider)?.total, 3);
+    expect(container.read(quizProvider)?.index, 0);
+  });
+
+  test('start() surfaces API errors and keeps the old session', () async {
+    final container = createContainer(client: mockTrivia(responseCode: 1));
+
+    await expectLater(
+      container.read(quizProvider.notifier).start(),
+      throwsA(
+        isA<TriviaException>().having(
+          (e) => e.error,
+          'error',
+          TriviaError.notEnoughQuestions,
+        ),
+      ),
+    );
+    expect(container.read(quizProvider), isNull);
+  });
+
+  test('a full round updates the session and the stats', () async {
+    final storage = MemoryStorage();
+    final container = createContainer(storage: storage);
+    final quiz = container.read(quizProvider.notifier);
+    await quiz.start();
+
+    // Can't skip ahead without answering.
+    quiz.next();
+    expect(container.read(quizProvider)!.index, 0);
+
+    quiz.answer('4');
+    // The first answer is final.
+    quiz.answer('5');
+    expect(container.read(quizProvider)!.current.selectedAnswer, '4');
+
+    quiz
+      ..next()
+      ..answer('4')
+      ..next()
+      ..answer('3')
+      // Already on the last question.
+      ..next();
+
+    final session = container.read(quizProvider)!;
+    expect(session.index, 2);
+    expect(session.correctCount, 2);
+    expect(session.bestStreak, 2);
+    expect(session.streak, 0);
+
+    quiz
+      ..finish()
+      // Finishing twice doesn't double count.
+      ..finish();
+
+    final stats = container.read(statsProvider);
+    expect(container.read(quizProvider)!.isFinished, isTrue);
+    expect(stats.quizzesPlayed, 1);
+    expect(stats.questionsAnswered, 3);
+    expect(stats.correctAnswers, 2);
+    expect(stats.bestStreak, 2);
+
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(statsProvider), stats);
+  });
+
+  test('timed quizzes award speed bonuses and time out', () async {
+    var now = DateTime(2026, 1, 1);
+    final container = createContainer(clock: () => now);
+    container.read(settingsProvider.notifier).setTimed(true);
+    final quiz = container.read(quizProvider.notifier);
+    await quiz.start();
+
+    now = now.add(const Duration(seconds: 5));
+    quiz.answer('4');
+    expect(container.read(quizProvider)!.points, 175);
+
+    quiz.next();
+    quiz.timeOut();
+    final session = container.read(quizProvider)!;
+    expect(session.current.timedOut, isTrue);
+    expect(session.current.isAnswered, isTrue);
+
+    // A late answer after the timeout is ignored.
+    quiz.answer('4');
+    expect(container.read(quizProvider)!.points, 175);
+  });
+
+  test('timeOut() does nothing in untimed quizzes', () async {
+    final container = createContainer();
+    final quiz = container.read(quizProvider.notifier);
+    await quiz.start();
+
+    quiz.timeOut();
+    expect(container.read(quizProvider)!.current.isAnswered, isFalse);
+  });
+
+  test('records results per category', () async {
+    final storage = MemoryStorage();
+    final container = createContainer(storage: storage);
+    final quiz = container.read(quizProvider.notifier);
+
+    Future<void> play(int? categoryId, List<String> answers) async {
+      container.read(settingsProvider.notifier).selectCategory(categoryId);
+      await quiz.start();
+      for (final answer in answers) {
+        quiz
+          ..answer(answer)
+          ..next();
+      }
+      quiz.finish();
+    }
+
+    await play(22, ['4', '4', '4']);
+    await play(22, ['4', '5', '5']);
+    await play(null, ['5', '5', '5']);
+
+    final stats = container.read(statsProvider);
+    final geography = stats.forCategory(22)!;
+    expect(geography.quizzesPlayed, 2);
+    expect(geography.bestScore, 1);
+    expect(geography.accuracy, closeTo(4 / 6, 0.001));
+    expect(stats.forCategory(null)!.bestScore, 0);
+    expect(stats.forCategory(9), isNull);
+
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(statsProvider), stats);
+  });
+
+  test('the daily challenge is timed and updates the daily streak', () async {
+    var now = DateTime(2026, 11, 9, 9);
+    final storage = MemoryStorage();
+    final container = createContainer(clock: () => now, storage: storage);
+    final quiz = container.read(quizProvider.notifier);
+
+    Future<void> playDaily() async {
+      await quiz.startDaily();
+      final session = container.read(quizProvider)!;
+      expect(session.isDaily, isTrue);
+      expect(session.isTimed, isTrue);
+      expect(session.total, DailyBank.questionsPerDay);
+      for (var i = 0; i < session.total; i++) {
+        quiz
+          ..answer('4')
+          ..next();
+      }
+      quiz.finish();
+    }
+
+    await playDaily();
+    expect(container.read(dailyProvider).streak, 1);
+    expect(container.read(dailyProvider).lastCorrect, 10);
+
+    now = DateTime(2026, 11, 10, 20);
+    await playDaily();
+    expect(container.read(dailyProvider).streak, 2);
+
+    // Daily rounds count in the lifetime totals but not in any category.
+    final stats = container.read(statsProvider);
+    expect(stats.quizzesPlayed, 2);
+    expect(stats.categories, isEmpty);
+
+    final relaunched = createContainer(storage: storage);
+    expect(relaunched.read(dailyProvider), container.read(dailyProvider));
+  });
+}

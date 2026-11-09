@@ -1,29 +1,27 @@
-import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_it/models/quiz.dart';
-import 'package:quiz_it/screens/splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Store<Quiz> store;
+import 'app.dart';
+import 'state/daily.dart';
+import 'state/effects.dart';
+import 'state/settings.dart';
+import 'state/stats.dart';
+import 'state/storage.dart';
 
-void main() {
-  store = Store<Quiz>(initialState: Quiz.initial());
-  runApp(QuizIt());
-}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class QuizIt extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return StoreProvider<Quiz>(
-      store: store,
-      child: MaterialApp(
-        title: 'QuizIt',
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: SplashScreen(),
-        debugShowCheckedModeBanner: false,
-      ),
-    );
-  }
+  final storage = await PrefsStorage.open({
+    SettingsNotifier.storageKey,
+    StatsNotifier.storageKey,
+    DailyNotifier.storageKey,
+    SoundNotifier.storageKey,
+  });
+
+  runApp(
+    ProviderScope(
+      overrides: [storageProvider.overrideWithValue(storage)],
+      child: const QuizItApp(),
+    ),
+  );
 }
