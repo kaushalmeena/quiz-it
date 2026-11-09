@@ -11,10 +11,8 @@
   <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
   <g transform="translate(512 512) scale(1.0) translate(-512 -512)">
     <g filter="url(#shadow)">
-      <circle cx="476" cy="540" r="226" fill="none" stroke="#FFFFFF" stroke-width="112"/>
-      <path d="M552 616 L716 780" stroke="#FFFFFF" stroke-width="112" stroke-linecap="round"/>
+      <circle cx="505" cy="505" r="226" fill="none" stroke="#FFFFFF" stroke-width="112"/>
+      <path d="M581 581 L745 745" stroke="#FFFFFF" stroke-width="112" stroke-linecap="round"/>
     </g>
-    <path transform="translate(784 236)" fill="#FFC94D"
-          d="M0 -112 C14 -30 30 -14 112 0 C30 14 14 30 0 112 C-14 30 -30 14 -112 0 C-30 -14 -14 -30 0 -112 Z"/>
   </g>
 </svg>

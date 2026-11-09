@@ -13,7 +13,6 @@ import tempfile
 
 TOP, BOTTOM = '#8357FF', '#5221C2'   # background gradient
 GLYPH = '#FFFFFF'
-SPARK = '#FFC94D'
 
 
 def glyph(scale):
@@ -21,17 +20,15 @@ def glyph(scale):
     return f'''
   <g transform="translate(512 512) scale({scale}) translate(-512 -512)">
     <g filter="url(#shadow)">
-      <circle cx="476" cy="540" r="226" fill="none" stroke="{GLYPH}" stroke-width="112"/>
-      <path d="M552 616 L716 780" stroke="{GLYPH}" stroke-width="112" stroke-linecap="round"/>
+      <circle cx="505" cy="505" r="226" fill="none" stroke="{GLYPH}" stroke-width="112"/>
+      <path d="M581 581 L745 745" stroke="{GLYPH}" stroke-width="112" stroke-linecap="round"/>
     </g>
-    <path transform="translate(784 236)" fill="{SPARK}"
-          d="M0 -112 C14 -30 30 -14 112 0 C30 14 14 30 0 112 C-14 30 -30 14 -112 0 C-30 -14 -14 -30 0 -112 Z"/>
   </g>'''
 
 
 def svg(mode):
     """mode: rounded (squircle), full (edge to edge), glyph (no background)."""
-    scale = {'rounded': 1.0, 'full': 0.86, 'maskable': 0.72, 'glyph': 0.68}[mode]
+    scale = {'rounded': 1.0, 'full': 0.86, 'maskable': 0.8, 'glyph': 0.74}[mode]
     radius = 230 if mode == 'rounded' else 0
     background = '' if mode == 'glyph' else \
         f'<rect width="1024" height="1024" rx="{radius}" fill="url(#bg)"/>'
