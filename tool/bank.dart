@@ -1,6 +1,6 @@
 // Downloads the question bank used by the daily challenge.
 //
-//   dart run tool/build_daily_bank.dart [count]
+//   dart run tool/bank.dart [count]
 //
 // Questions come from the Open Trivia Database (https://opentdb.com),
 // licensed under CC BY-SA 4.0. They're stored as returned by the API with

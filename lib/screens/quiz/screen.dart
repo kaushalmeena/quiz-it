@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/session.dart';
 import '../../state/effects.dart';
-import '../../state/quiz.dart';
+import '../../state/session.dart';
 import '../../widgets/layout.dart';
-import '../results/results.dart';
+import '../results/screen.dart';
 import 'countdown.dart';
 import 'feedback.dart';
-import 'question_view.dart';
+import 'question.dart';
 import '../../theme/palette.dart';
 import '../../theme/radii.dart';
 import '../../utils/format.dart';

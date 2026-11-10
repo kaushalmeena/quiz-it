@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/category.dart';
 import '../../models/question.dart';
-import '../../state/quiz.dart';
+import '../../state/session.dart';
 import '../../theme/palette.dart';
 import '../../theme/radii.dart';
 

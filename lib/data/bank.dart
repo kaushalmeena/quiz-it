@@ -8,7 +8,7 @@ import '../models/question.dart';
 /// A fixed bank of questions bundled with the app, so every player gets the
 /// same daily challenge on the same day, even offline.
 ///
-/// Built with `dart run tool/build_daily_bank.dart`.
+/// Built with `dart run tool/bank.dart`.
 class DailyBank {
   DailyBank(List<Map<String, dynamic>> questions)
     : _questions = List.unmodifiable(questions),

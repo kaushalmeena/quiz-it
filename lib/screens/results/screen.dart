@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/clock.dart';
 import '../../state/daily.dart';
 import '../../state/effects.dart';
-import '../../state/quiz.dart';
+import '../../state/session.dart';
 import '../../widgets/confetti.dart';
 import '../../widgets/layout.dart';
-import '../../widgets/start_button.dart';
+import '../../widgets/start.dart';
 import '../../utils/format.dart';
-import '../quiz/quiz.dart';
+import '../quiz/screen.dart';
 import 'review.dart';
-import 'score_ring.dart';
+import 'score.dart';
 
 /// Score, round stats and an answer review for the finished session.
 class ResultsScreen extends ConsumerWidget {

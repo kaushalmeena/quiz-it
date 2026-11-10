@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:quiz_it/data/api.dart';
 import 'package:quiz_it/models/difficulty.dart';
-import 'package:quiz_it/models/question_type.dart';
+import 'package:quiz_it/models/choices.dart';
 import 'package:quiz_it/models/settings.dart';
 
 import '../fixtures.dart';

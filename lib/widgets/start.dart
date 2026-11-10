@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/api.dart';
-import '../state/quiz.dart';
+import '../state/session.dart';
 
 /// Loads a new quiz with the current settings, showing progress in place and
 /// errors in a snack bar. Calls [onStarted] once the questions are ready.

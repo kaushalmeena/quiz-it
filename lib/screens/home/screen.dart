@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/effects.dart';
 import '../../state/settings.dart';
 import '../../widgets/layout.dart';
-import '../../widgets/start_button.dart';
-import '../quiz/quiz.dart';
-import 'category_grid.dart';
-import 'daily_card.dart';
+import '../../widgets/start.dart';
+import '../quiz/screen.dart';
+import 'topics.dart';
+import 'daily.dart';
 import 'options.dart';
-import 'stats_summary.dart';
+import 'summary.dart';
 
 /// Quiz setup: lifetime stats, quiz options and a category picker.
 class HomeScreen extends ConsumerWidget {

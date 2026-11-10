@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_it/data/daily_bank.dart';
+import 'package:quiz_it/data/bank.dart';
 
 import '../fixtures.dart';
 

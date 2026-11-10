@@ -85,9 +85,9 @@ assets/
 └── sounds/             # Sound effects
 
 tool/
-├── build_daily_bank.dart  # Re-downloads the daily question bank
-├── logo.py                # Renders all app icons from the logo design
-└── screenshots/           # Renders the README screenshots
+├── bank.dart        # Re-downloads the daily question bank
+├── logo.py          # Renders all app icons from the logo design
+└── screenshots/     # Renders the README screenshots
 ```
 
 ## Tech Stack
@@ -186,7 +186,7 @@ To rebuild the daily challenge question bank (takes about two minutes because
 of the API's rate limit):
 
 ```bash
-dart run tool/build_daily_bank.dart
+dart run tool/bank.dart
 ```
 
 To re-render the logo and every app icon after editing the design in

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home/home.dart';
+import 'screens/home/screen.dart';
 import 'theme/theme.dart';
 
 class QuizItApp extends StatelessWidget {

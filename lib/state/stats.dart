@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/session.dart';
-import '../models/stats.dart';
+import '../models/statistics.dart';
 import 'storage.dart';
 
 final statsProvider = NotifierProvider<StatsNotifier, Stats>(StatsNotifier.new);

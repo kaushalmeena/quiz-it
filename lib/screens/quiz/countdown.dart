@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/session.dart';
 import '../../state/clock.dart';
-import '../../state/quiz.dart';
+import '../../state/session.dart';
 import '../../theme/radii.dart';
 
 /// Time left for the current question in a timed quiz. Times the question out

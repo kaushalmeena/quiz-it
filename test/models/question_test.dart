@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_it/models/category.dart';
 import 'package:quiz_it/models/difficulty.dart';
 import 'package:quiz_it/models/question.dart';
-import 'package:quiz_it/models/question_type.dart';
+import 'package:quiz_it/models/choices.dart';
 
 import '../fixtures.dart';
 

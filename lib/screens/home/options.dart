@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/difficulty.dart';
-import '../../models/question_type.dart';
+import '../../models/choices.dart';
 import '../../models/session.dart';
 import '../../models/settings.dart';
 import '../../state/settings.dart';

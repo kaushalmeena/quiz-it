@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_it/models/daily.dart';
+import 'package:quiz_it/models/progress.dart';
 import 'package:quiz_it/models/question.dart';
 import 'package:quiz_it/models/session.dart';
 

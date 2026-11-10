@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import 'difficulty.dart';
-import 'question_type.dart';
+import 'choices.dart';
 
 @immutable
 class Question {

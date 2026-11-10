@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/api.dart';
-import '../models/daily.dart';
+import '../models/progress.dart';
 import '../models/session.dart';
 import '../models/settings.dart';
 import 'clock.dart';

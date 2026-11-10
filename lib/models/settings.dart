@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'difficulty.dart';
-import 'question_type.dart';
+import 'choices.dart';
 
 /// What the next quiz should look like. Persisted between launches.
 @immutable

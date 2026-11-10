@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/daily_bank.dart';
-import '../models/daily.dart';
+import '../data/bank.dart';
+import '../models/progress.dart';
 import '../models/session.dart';
 import 'clock.dart';
 import 'storage.dart';

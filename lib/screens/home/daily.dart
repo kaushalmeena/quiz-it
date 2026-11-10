@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/daily_bank.dart';
+import '../../data/bank.dart';
 import '../../state/clock.dart';
 import '../../state/daily.dart';
 import '../../theme/palette.dart';
 import '../../theme/radii.dart';
 import '../../utils/format.dart';
-import '../../widgets/start_button.dart';
-import '../quiz/quiz.dart';
+import '../../widgets/start.dart';
+import '../quiz/screen.dart';
 
 const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const _months = [

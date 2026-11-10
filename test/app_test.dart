@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:quiz_it/app.dart';
 import 'package:quiz_it/data/api.dart';
 import 'package:quiz_it/state/effects.dart';
-import 'package:quiz_it/state/quiz.dart';
+import 'package:quiz_it/state/session.dart';
 import 'package:quiz_it/state/settings.dart';
 import 'package:quiz_it/state/storage.dart';
 

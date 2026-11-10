@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/difficulty.dart';
-import '../models/question_type.dart';
+import '../models/choices.dart';
 import '../models/settings.dart';
 import 'storage.dart';
 

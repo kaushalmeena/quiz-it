@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz_it/data/daily_bank.dart';
+import 'package:quiz_it/data/bank.dart';
 import 'package:quiz_it/state/effects.dart';
 
 // Loads through the app's real asset bundle, so a file that exists on disk

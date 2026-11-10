@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/difficulty.dart';
 import '../models/question.dart';
-import '../models/question_type.dart';
+import '../models/choices.dart';
 import '../models/settings.dart';
 
 /// Client for the public Open Trivia Database API (https://opentdb.com).
